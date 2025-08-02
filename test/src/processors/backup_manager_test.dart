@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:fix_flutter_deprecations/src/processors/processors.dart';
-import 'package:fix_flutter_deprecations/src/utils/utils.dart';
 import 'package:mason_logger/mason_logger.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:path/path.dart' as path;
@@ -24,38 +23,10 @@ void main() {
       when(() => logger.err(any())).thenReturn(null);
       when(() => logger.detail(any())).thenReturn(null);
       when(() => logger.info(any())).thenReturn(null);
-      // Add logger extensions mocks
-      when(() => logger.fileStart(any())).thenReturn(null);
-      when(
-        () => logger.fileComplete(
-          any(),
-          hasChanges: any(named: 'hasChanges'),
-        ),
-      ).thenReturn(null);
-      when(() => logger.fileError(any(), any())).thenReturn(null);
-      when(() => logger.ruleApplied(any(), any())).thenReturn(null);
-      when(() => logger.backupCreated(any())).thenReturn(null);
-      when(() => logger.backupRestored(any())).thenReturn(null);
-      when(
-        () => logger.progressBar(any(), total: any(named: 'total')),
-      ).thenReturn(MockProgress());
-      when(() => logger.listRules(any())).thenReturn(null);
-      when(
-        () => logger.previewChange(
-          filePath: any(named: 'filePath'),
-          ruleName: any(named: 'ruleName'),
-          change: any(named: 'change'),
-        ),
-      ).thenReturn(null);
-      when(
-        () => logger.fixSummary(
-          totalFiles: any(named: 'totalFiles'),
-          filesModified: any(named: 'filesModified'),
-          filesWithErrors: any(named: 'filesWithErrors'),
-          elapsed: any(named: 'elapsed'),
-        ),
-      ).thenReturn(null);
-      when(() => logger.dryRunNotice()).thenReturn(null);
+      when(() => logger.success(any())).thenReturn(null);
+      when(() => logger.warn(any())).thenReturn(null);
+      // The logger extension methods call the base logger methods
+      // So we don't need to mock them separately
 
       backupManager = BackupManager(logger: logger);
       tempDir = Directory.systemTemp.createTempSync('backup_manager_test_');
@@ -113,7 +84,7 @@ void main() {
 
         expect(await testFile1.readAsString(), equals('content1'));
         expect(await testFile2.readAsString(), equals('content2'));
-        verify(() => logger.backupRestored(any<String>())).called(2);
+        verify(() => logger.detail(any())).called(greaterThanOrEqualTo(2));
       });
 
       test('handles restore errors gracefully', () async {

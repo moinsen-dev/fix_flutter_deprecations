@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.1] - 2025-08-02
+
+### Fixed
+- Fixed broken images in README on pub.dev by correcting GitHub repository URLs
+- Updated coverage badge to use repository-hosted SVG file
+
+### Changed
+- Added proper attribution footer with credits to Claude Code and Moinsen Development
+
 ## [0.1.0] - 2025-08-02
 
 ### Added
@@ -28,5 +37,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Detailed error reporting and recovery
 - Platform support for Windows, macOS, and Linux
 
-[Unreleased]: https://github.com/moinsen-dev/fix_flutter_deprecations/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/moinsen-dev/fix_flutter_deprecations/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/moinsen-dev/fix_flutter_deprecations/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/moinsen-dev/fix_flutter_deprecations/releases/tag/v0.1.0

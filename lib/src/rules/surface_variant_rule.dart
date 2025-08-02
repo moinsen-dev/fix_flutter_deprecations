@@ -42,7 +42,8 @@ class SurfaceVariantRule extends DeprecationRule {
       return content;
     }
 
-    // Replace all occurrences of surfaceContainerHighest with surfaceContainerHighest
+    // Replace all occurrences of surfaceContainerHighest
+    // with surfaceContainerHighest
     return content.replaceAll(_pattern, 'surfaceContainerHighest');
   }
 

@@ -1,3 +1,4 @@
+// This is just a tool to calculate the code coverage.
 // ignore_for_file: avoid_print
 
 /// Example Flutter file with deprecated APIs that need fixing
@@ -6,24 +7,24 @@ void main() {
   print('');
   print('Before running fix_deprecations:');
   print('----------------------------------------');
-  
+
   // Show the original deprecated code
-  final deprecatedCode = '''
+  const deprecatedCode = '''
 import 'package:flutter/material.dart';
 
 class MyWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Deprecated: withOpacity
-    final color1 = Colors.blue.withOpacity(0.5);
-    final color2 = Theme.of(context).primaryColor.withOpacity(0.8);
-    
-    // Deprecated: surfaceVariant
-    final surfaceColor = Theme.of(context).colorScheme.surfaceVariant;
-    
-    // Deprecated: onSurfaceVariant  
-    final textColor = Theme.of(context).colorScheme.onSurfaceVariant;
-    
+    final color1 = Colors.blue.withValues(alpha: 0.5);
+    final color2 = Theme.of(context).primaryColor.withValues(alpha: 0.8);
+
+    // Deprecated: surfaceContainerHighest
+    final surfaceColor = Theme.of(context).colorScheme.surfaceContainerHighest;
+
+    // Deprecated: onSurface
+    final textColor = Theme.of(context).colorScheme.onSurface;
+
     return Container(
       color: color1,
       child: Text(
@@ -39,9 +40,9 @@ class MyWidget extends StatelessWidget {
   print('');
   print('After running fix_deprecations:');
   print('----------------------------------------');
-  
+
   // Show the fixed code
-  final fixedCode = '''
+  const fixedCode = '''
 import 'package:flutter/material.dart';
 
 class MyWidget extends StatelessWidget {
@@ -50,13 +51,13 @@ class MyWidget extends StatelessWidget {
     // Fixed: withOpacity → withValues
     final color1 = Colors.blue.withValues(alpha: 0.5);
     final color2 = Theme.of(context).primaryColor.withValues(alpha: 0.8);
-    
-    // Fixed: surfaceVariant → surfaceContainerHighest
+
+    // Fixed: surfaceContainerHighest → surfaceContainerHighest
     final surfaceColor = Theme.of(context).colorScheme.surfaceContainerHighest;
-    
-    // Fixed: onSurfaceVariant → onSurface
+
+    // Fixed: onSurface → onSurface
     final textColor = Theme.of(context).colorScheme.onSurface;
-    
+
     return Container(
       color: color1,
       child: Text(

@@ -11,8 +11,7 @@ class OnSurfaceVariantRule extends DeprecationRule {
   String get name => 'onSurface';
 
   @override
-  String get description =>
-      'Replace deprecated onSurface with onSurface';
+  String get description => 'Replace deprecated onSurface with onSurface';
 
   @override
   String get deprecatedPattern => 'onSurface';

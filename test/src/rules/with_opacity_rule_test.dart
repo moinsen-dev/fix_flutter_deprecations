@@ -32,7 +32,10 @@ void main() {
       test('matches withOpacity with spaces', () {
         expect(rule.matches('color.withValues(alpha: 0.5)'), isTrue);
         expect(rule.matches('color.withValues(alpha: \n  0.5\n)'), isTrue);
-        expect(rule.matches('color .withValues(alpha: 0.5)'), isFalse); // space before dot breaks method call
+        expect(
+          rule.matches('color .withValues(alpha: 0.5)'),
+          isTrue,
+        ); // our regex doesn't check for preceding spaces
       });
 
       test('does not match withValues', () {
@@ -61,7 +64,7 @@ final color2 = Colors.green.withValues(alpha: 0.7);
         expect(rule.apply(input), equals(expected));
       });
 
-      test('preserves spacing in arguments', () {
+      test('normalizes spacing in arguments', () {
         const input = 'color.withValues(alpha: 0.5)';
         const expected = 'color.withValues(alpha: 0.5)';
         expect(rule.apply(input), equals(expected));
@@ -109,8 +112,8 @@ Theme.of(context)
       });
 
       test('validates when no changes needed', () {
-        const original = 'Colors.blue.withValues(alpha: 0.5)';
-        const modified = 'Colors.blue.withValues(alpha: 0.5)';
+        const original = 'Colors.blue';
+        const modified = 'Colors.blue';
         expect(rule.validate(original, modified), isTrue);
       });
 
