@@ -8,7 +8,9 @@ import 'package:pub_updater/pub_updater.dart';
 
 const executableName = 'fix_deprecations';
 const packageName = 'fix_flutter_deprecations';
-const description = 'Flutter Deprecation Fixer';
+const description =
+    'A powerful and extensible Dart CLI tool that '
+    'automatically fixes Flutter deprecations in your codebase';
 
 /// {@template fix_flutter_deprecations_command_runner}
 /// A [CommandRunner] for the CLI.
@@ -37,7 +39,8 @@ class FixFlutterDeprecationsCommandRunner extends CompletionCommandRunner<int> {
       );
 
     // Add sub commands
-    addCommand(SampleCommand(logger: _logger));
+    addCommand(FixCommand(logger: _logger));
+    addCommand(ListCommand(logger: _logger));
     addCommand(UpdateCommand(logger: _logger, pubUpdater: _pubUpdater));
   }
 
