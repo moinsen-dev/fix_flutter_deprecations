@@ -17,7 +17,7 @@ import 'package:meta/meta.dart';
 /// final dryRunOptions = FixOptions(
 ///   targetPath: 'lib/',
 ///   dryRun: true,
-///   rules: ['withOpacity', 'surfaceVariant'],
+///   rules: ['withOpacity', 'surfaceContainerHighest'],
 ///   verbose: true,
 /// );
 ///

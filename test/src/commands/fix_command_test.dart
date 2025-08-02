@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
-import 'package:fix_flutter_deprecations/src/commands/commands.dart';
+import 'package:fix_flutter_deprecations/src/commands/fix_command.dart';
 import 'package:fix_flutter_deprecations/src/utils/utils.dart';
 import 'package:mason_logger/mason_logger.dart';
 import 'package:mocktail/mocktail.dart';
@@ -84,10 +84,10 @@ void main() {
         // Note: Skipping logger verification due to extension method complexity
       });
 
-      test('handles no-backup option', () async {
+      test('handles backup option', () async {
         final result = await commandRunner.run([
           'fix',
-          '--no-backup',
+          '--backup',
           '--dry-run',
           '--path',
           tempDir.path,
@@ -115,7 +115,7 @@ void main() {
         final result = await commandRunner.run([
           'fix',
           '--rules',
-          'withOpacity,surfaceVariant',
+          'withOpacity,surfaceContainerHighest',
           '--dry-run',
           '--path',
           tempDir.path,
@@ -169,8 +169,8 @@ void main() {
         // Create file with deprecations
         await dartFile.writeAsString('''
 void main() {
-  final color = colorScheme.surfaceVariant;
-  final opacity = 0.5.withOpacity(0.8);
+  final color = colorScheme.surfaceContainerHighest;
+  final opacity = 0.5.withValues(alpha: 0.8);
 }
 ''');
 

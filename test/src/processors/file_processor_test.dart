@@ -42,8 +42,8 @@ void main() {
       setUp(() async {
         testFile = File(path.join(tempDir.path, 'test.dart'));
         await testFile.writeAsString('''
-Color get color => colorScheme.surfaceVariant;
-final opacity = 0.5.withOpacity(0.8);
+Color get color => colorScheme.surfaceContainerHighest;
+final opacity = 0.5.withValues(alpha: 0.8);
 ''');
       });
 
@@ -53,7 +53,7 @@ final opacity = 0.5.withOpacity(0.8);
         final result = await processor.processFile(testFile, options);
 
         expect(result.hasChanges, isTrue);
-        expect(result.appliedRules, contains('surfaceVariant'));
+        expect(result.appliedRules, contains('surfaceContainerHighest'));
         expect(result.appliedRules, contains('withOpacity'));
         expect(result.changes, hasLength(2));
         expect(result.error, isNull);
@@ -140,7 +140,7 @@ final opacity = 0.5.withOpacity(0.8);
         final result = await processor.processFile(testFile, options);
 
         expect(result.appliedRules, equals(['withOpacity']));
-        expect(result.appliedRules, isNot(contains('surfaceVariant')));
+        expect(result.appliedRules, isNot(contains('surfaceContainerHighest')));
       });
 
       test('handles verbose mode logging', () async {
@@ -159,7 +159,7 @@ final opacity = 0.5.withOpacity(0.8);
         // Create a file that will cause validation to fail
         await testFile.writeAsString('''
 // This will cause the withOpacity rule to fail validation
-final opacity = 0.5.withOpacity(0.8).withOpacity(0.9);
+final opacity = 0.5.withValues(alpha: 0.8).withValues(alpha: 0.9);
 ''');
 
         final options = FixOptions(
@@ -201,8 +201,8 @@ final opacity = 0.5.withOpacity(0.8).withOpacity(0.9);
       setUp(() async {
         file1 = File(path.join(tempDir.path, 'file1.dart'));
         file2 = File(path.join(tempDir.path, 'file2.dart'));
-        await file1.writeAsString('color: colorScheme.surfaceVariant');
-        await file2.writeAsString('opacity: 0.5.withOpacity(0.8)');
+        await file1.writeAsString('color: colorScheme.surfaceContainerHighest');
+        await file2.writeAsString('opacity: 0.5.withValues(alpha: 0.8)');
       });
 
       test('processes multiple files', () async {
@@ -215,7 +215,7 @@ final opacity = 0.5.withOpacity(0.8).withOpacity(0.9);
 
         expect(results.length, equals(2));
         expect(results.every((r) => r.hasChanges), isTrue);
-        expect(results[0].appliedRules, contains('surfaceVariant'));
+        expect(results[0].appliedRules, contains('surfaceContainerHighest'));
         expect(results[1].appliedRules, contains('withOpacity'));
       });
 

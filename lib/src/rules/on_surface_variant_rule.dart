@@ -1,31 +1,31 @@
 import 'package:fix_flutter_deprecations/src/rules/deprecation_rule.dart';
 
-/// Rule to fix deprecated onSurfaceVariant color.
+/// Rule to fix deprecated onSurface color.
 ///
-/// Replaces `onSurfaceVariant` with `onSurface`.
+/// Replaces `onSurface` with `onSurface`.
 class OnSurfaceVariantRule extends DeprecationRule {
   /// Creates a new [OnSurfaceVariantRule].
   const OnSurfaceVariantRule();
 
   @override
-  String get name => 'onSurfaceVariant';
+  String get name => 'onSurface';
 
   @override
   String get description =>
-      'Replace deprecated onSurfaceVariant with onSurface';
+      'Replace deprecated onSurface with onSurface';
 
   @override
-  String get deprecatedPattern => 'onSurfaceVariant';
+  String get deprecatedPattern => 'onSurface';
 
   @override
   String get replacementExample => 'onSurface';
 
-  /// Pattern to match onSurfaceVariant usage.
+  /// Pattern to match onSurface usage.
   /// Matches:
-  /// - colorScheme.onSurfaceVariant
-  /// - theme.colorScheme.onSurfaceVariant
-  /// - Theme.of(context).colorScheme.onSurfaceVariant
-  /// - color: onSurfaceVariant (in specific contexts)
+  /// - colorScheme.onSurface
+  /// - theme.colorScheme.onSurface
+  /// - Theme.of(context).colorScheme.onSurface
+  /// - color: onSurface (in specific contexts)
   static final _pattern = RegExp(
     r'\bonSurfaceVariant\b',
     multiLine: true,
@@ -42,7 +42,7 @@ class OnSurfaceVariantRule extends DeprecationRule {
       return content;
     }
 
-    // Replace all occurrences of onSurfaceVariant with onSurface
+    // Replace all occurrences of onSurface with onSurface
     return content.replaceAll(_pattern, 'onSurface');
   }
 
@@ -53,17 +53,17 @@ class OnSurfaceVariantRule extends DeprecationRule {
       return false;
     }
 
-    // Check that all onSurfaceVariant occurrences were replaced
+    // Check that all onSurface occurrences were replaced
     final modifiedCount = _pattern.allMatches(modified).length;
 
-    // All onSurfaceVariant occurrences should be replaced
+    // All onSurface occurrences should be replaced
     if (modifiedCount != 0) {
       return false;
     }
 
     // Since onSurface is a common name that might already exist,
     // we can't reliably check the count of replacements
-    // Just ensure no onSurfaceVariant remains
+    // Just ensure no onSurface remains
     return true;
   }
 }

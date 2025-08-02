@@ -1,10 +1,21 @@
 # Fix Flutter Deprecations
 
-![coverage][coverage_badge]
-[![style: very good analysis][very_good_analysis_badge]][very_good_analysis_link]
-[![License: MIT][license_badge]][license_link]
+<p align="center">
+  <img src="images/fix_deprecations_logo.png" alt="Fix Flutter Deprecations Logo" width="200"/>
+</p>
+
+<p align="center">
+  <a href="https://github.com/udimain/fix_flutter_deprecations/actions"><img src="https://github.com/udimain/fix_flutter_deprecations/actions/workflows/main.yaml/badge.svg" alt="ci"></a>
+  <a href="https://codecov.io/gh/udimain/fix_flutter_deprecations"><img src="https://codecov.io/gh/udimain/fix_flutter_deprecations/branch/main/graph/badge.svg" alt="coverage"></a>
+  <a href="https://pub.dev/packages/very_good_analysis"><img src="https://img.shields.io/badge/style-very_good_analysis-B22C89.svg" alt="style: very good analysis"></a>
+  <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/license-MIT-purple.svg" alt="License: MIT"></a>
+</p>
 
 A powerful and extensible Dart command-line tool that automatically fixes Flutter deprecations in your codebase. As Flutter evolves, APIs get deprecated and replaced with new ones. This tool helps you migrate your codebase efficiently by automatically applying common deprecation fixes.
+
+<p align="center">
+  <img src="images/fix_deprecations_wallpaper.png" alt="Fix Flutter Deprecations in action" width="800"/>
+</p>
 
 ## Features ✨
 
@@ -166,9 +177,6 @@ Contributions are welcome! Please feel free to submit a Pull Request. For major 
 
 ---
 
-[coverage_badge]: coverage_badge.svg
-[license_badge]: https://img.shields.io/badge/license-MIT-blue.svg
-[license_link]: https://opensource.org/licenses/MIT
-[very_good_analysis_badge]: https://img.shields.io/badge/style-very_good_analysis-B22C89.svg
-[very_good_analysis_link]: https://pub.dev/packages/very_good_analysis
+Generated with 💙 by [Very Good CLI][very_good_cli_link]
+
 [very_good_cli_link]: https://github.com/VeryGoodOpenSource/very_good_cli

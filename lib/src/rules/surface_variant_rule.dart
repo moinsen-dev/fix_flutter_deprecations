@@ -1,31 +1,31 @@
 import 'package:fix_flutter_deprecations/src/rules/deprecation_rule.dart';
 
-/// Rule to fix deprecated surfaceVariant color.
+/// Rule to fix deprecated surfaceContainerHighest color.
 ///
-/// Replaces `surfaceVariant` with `surfaceContainerHighest`.
+/// Replaces `surfaceContainerHighest` with `surfaceContainerHighest`.
 class SurfaceVariantRule extends DeprecationRule {
   /// Creates a new [SurfaceVariantRule].
   const SurfaceVariantRule();
 
   @override
-  String get name => 'surfaceVariant';
+  String get name => 'surfaceContainerHighest';
 
   @override
   String get description =>
-      'Replace deprecated surfaceVariant with surfaceContainerHighest';
+      'Replace deprecated surfaceContainerHighest with surfaceContainerHighest';
 
   @override
-  String get deprecatedPattern => 'surfaceVariant';
+  String get deprecatedPattern => 'surfaceContainerHighest';
 
   @override
   String get replacementExample => 'surfaceContainerHighest';
 
-  /// Pattern to match surfaceVariant usage.
+  /// Pattern to match surfaceContainerHighest usage.
   /// Matches:
-  /// - colorScheme.surfaceVariant
-  /// - theme.colorScheme.surfaceVariant
-  /// - Theme.of(context).colorScheme.surfaceVariant
-  /// - color: surfaceVariant (in specific contexts)
+  /// - colorScheme.surfaceContainerHighest
+  /// - theme.colorScheme.surfaceContainerHighest
+  /// - Theme.of(context).colorScheme.surfaceContainerHighest
+  /// - color: surfaceContainerHighest (in specific contexts)
   static final _pattern = RegExp(
     r'\bsurfaceVariant\b',
     multiLine: true,
@@ -42,7 +42,7 @@ class SurfaceVariantRule extends DeprecationRule {
       return content;
     }
 
-    // Replace all occurrences of surfaceVariant with surfaceContainerHighest
+    // Replace all occurrences of surfaceContainerHighest with surfaceContainerHighest
     return content.replaceAll(_pattern, 'surfaceContainerHighest');
   }
 
@@ -57,7 +57,7 @@ class SurfaceVariantRule extends DeprecationRule {
     final originalCount = _pattern.allMatches(original).length;
     final modifiedCount = _pattern.allMatches(modified).length;
 
-    // All surfaceVariant occurrences should be replaced
+    // All surfaceContainerHighest occurrences should be replaced
     if (modifiedCount != 0) {
       return false;
     }

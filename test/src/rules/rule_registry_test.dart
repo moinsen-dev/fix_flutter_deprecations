@@ -17,8 +17,8 @@ void main() {
 
       expect(names.length, equals(3));
       expect(names, contains('withOpacity'));
-      expect(names, contains('surfaceVariant'));
-      expect(names, contains('onSurfaceVariant'));
+      expect(names, contains('surfaceContainerHighest'));
+      expect(names, contains('onSurface'));
     });
 
     group('getRules', () {
@@ -40,7 +40,10 @@ void main() {
       });
 
       test('returns multiple specific rules', () {
-        final rules = RuleRegistry.getRules(['withOpacity', 'surfaceVariant']);
+        final rules = RuleRegistry.getRules([
+          'withOpacity',
+          'surfaceContainerHighest',
+        ]);
 
         expect(rules.length, equals(2));
         expect(rules.any((r) => r is WithOpacityRule), isTrue);
@@ -66,11 +69,15 @@ void main() {
           throwsA(
             isA<ArgumentError>()
                 .having((e) => e.message, 'message', contains('withOpacity'))
-                .having((e) => e.message, 'message', contains('surfaceVariant'))
                 .having(
                   (e) => e.message,
                   'message',
-                  contains('onSurfaceVariant'),
+                  contains('surfaceContainerHighest'),
+                )
+                .having(
+                  (e) => e.message,
+                  'message',
+                  contains('onSurface'),
                 ),
           ),
         );
@@ -93,11 +100,11 @@ void main() {
       test('returns correct rule for each name', () {
         expect(RuleRegistry.getRule('withOpacity'), isA<WithOpacityRule>());
         expect(
-          RuleRegistry.getRule('surfaceVariant'),
+          RuleRegistry.getRule('surfaceContainerHighest'),
           isA<SurfaceVariantRule>(),
         );
         expect(
-          RuleRegistry.getRule('onSurfaceVariant'),
+          RuleRegistry.getRule('onSurface'),
           isA<OnSurfaceVariantRule>(),
         );
       });
@@ -106,7 +113,10 @@ void main() {
     group('validateRuleNames', () {
       test('returns true for valid rule names', () {
         expect(
-          RuleRegistry.validateRuleNames(['withOpacity', 'surfaceVariant']),
+          RuleRegistry.validateRuleNames([
+            'withOpacity',
+            'surfaceContainerHighest',
+          ]),
           isTrue,
         );
       });
@@ -133,14 +143,14 @@ void main() {
     group('getInvalidRuleNames', () {
       test('returns empty for valid rule names', () {
         final invalid = RuleRegistry.getInvalidRuleNames(
-          ['withOpacity', 'surfaceVariant'],
+          ['withOpacity', 'surfaceContainerHighest'],
         );
         expect(invalid, isEmpty);
       });
 
       test('returns invalid rule names', () {
         final invalid = RuleRegistry.getInvalidRuleNames(
-          ['withOpacity', 'badRule', 'surfaceVariant', 'anotherBad'],
+          ['withOpacity', 'badRule', 'surfaceContainerHighest', 'anotherBad'],
         );
 
         expect(invalid.length, equals(2));

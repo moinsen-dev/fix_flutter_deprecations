@@ -9,7 +9,10 @@ import 'package:mocktail/mocktail.dart';
 import 'package:pub_updater/pub_updater.dart';
 import 'package:test/test.dart';
 
-class _MockLogger extends Mock implements Logger {}
+class _MockLogger extends Mock implements Logger {
+  @override
+  Level level = Level.info;
+}
 
 class _MockProgress extends Mock implements Progress {}
 
@@ -155,29 +158,27 @@ void main() {
 
     group('--verbose', () {
       test('enables verbose logging', () async {
-        final result = await commandRunner.run(['--verbose']);
+        when(() => logger.warn(any())).thenReturn(null);
+        when(() => logger.info(any())).thenReturn(null);
+        final result = await commandRunner.run(['--verbose', '.']);
         expect(result, equals(ExitCode.success.code));
 
-        verify(() => logger.detail('Argument information:')).called(1);
-        verify(() => logger.detail('  Top level options:')).called(1);
-        verify(() => logger.detail('  - verbose: true')).called(1);
-        verifyNever(() => logger.detail('    Command options:'));
+        // Verify verbose was set
+        expect(logger.level, equals(Level.verbose));
       });
 
-      test('enables verbose logging for sub commands', () async {
+      test('enables verbose logging for list-rules', () async {
+        when(() => logger.info(any())).thenReturn(null);
         final result = await commandRunner.run([
           '--verbose',
-          'list',
-          '--verbose',
+          '--list-rules',
         ]);
         expect(result, equals(ExitCode.success.code));
 
-        verify(() => logger.detail('Argument information:')).called(1);
-        verify(() => logger.detail('  Top level options:')).called(1);
-        verify(() => logger.detail('  - verbose: true')).called(1);
-        verify(() => logger.detail('  Command: list')).called(1);
-        verify(() => logger.detail('    Command options:')).called(1);
-        verify(() => logger.detail('    - verbose: true')).called(1);
+        // Verify verbose list-rules output was shown
+        verify(
+          () => logger.info(any(that: contains('Description:'))),
+        ).called(greaterThanOrEqualTo(1));
       });
     });
   });

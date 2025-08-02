@@ -23,8 +23,9 @@ class FixCommand extends Command<int> {
         negatable: false,
       )
       ..addFlag(
-        'no-backup',
-        help: 'Skip creating backup files',
+        'backup',
+        abbr: 'b',
+        help: 'Create backup files (.bak)',
         negatable: false,
       )
       ..addFlag(
@@ -63,7 +64,7 @@ class FixCommand extends Command<int> {
     final options = FixOptions(
       targetPath: argResults!['path'] as String,
       dryRun: argResults!['dry-run'] as bool,
-      backup: !(argResults!['no-backup'] as bool),
+      backup: argResults!['backup'] as bool,
       verbose: argResults!['verbose'] as bool,
       rules: (argResults!['rules'] as List<String>).isEmpty
           ? null

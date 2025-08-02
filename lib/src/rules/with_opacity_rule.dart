@@ -2,7 +2,7 @@ import 'package:fix_flutter_deprecations/src/rules/deprecation_rule.dart';
 
 /// Rule to fix deprecated .withOpacity() calls.
 ///
-/// Replaces `.withOpacity(value)` with `.withValues(alpha: value)`.
+/// Replaces `.withValues(alpha: value)` with `.withValues(alpha: value)`.
 class WithOpacityRule extends DeprecationRule {
   /// Creates a new [WithOpacityRule].
   const WithOpacityRule();
@@ -20,7 +20,7 @@ class WithOpacityRule extends DeprecationRule {
   @override
   String get replacementExample => '.withValues(alpha: value)';
 
-  /// Pattern to match .withOpacity(value) calls.
+  /// Pattern to match .withValues(alpha: value) calls.
   static final _pattern = RegExp(
     r'\.withOpacity\s*\(\s*([^)]+)\s*\)',
     multiLine: true,

@@ -1,5 +1,5 @@
 import 'package:args/command_runner.dart';
-import 'package:fix_flutter_deprecations/src/commands/commands.dart';
+import 'package:fix_flutter_deprecations/src/commands/list_command.dart';
 import 'package:mason_logger/mason_logger.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
@@ -23,7 +23,7 @@ void main() {
       test('has correct name and description', () {
         final command = ListCommand(logger: logger);
         expect(command.name, equals('list'));
-        expect(command.description, contains('List available'));
+        expect(command.description, contains('List all available'));
       });
     });
 

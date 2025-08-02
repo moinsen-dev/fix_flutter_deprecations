@@ -21,18 +21,18 @@ void main() {
 
     group('matches', () {
       test('matches simple withOpacity calls', () {
-        expect(rule.matches('Colors.blue.withOpacity(0.5)'), isTrue);
-        expect(rule.matches('color.withOpacity(0.8)'), isTrue);
+        expect(rule.matches('Colors.blue.withValues(alpha: 0.5)'), isTrue);
+        expect(rule.matches('color.withValues(alpha: 0.8)'), isTrue);
         expect(
-          rule.matches('Theme.of(context).primaryColor.withOpacity(0.3)'),
+          rule.matches('Theme.of(context).primaryColor.withValues(alpha: 0.3)'),
           isTrue,
         );
       });
 
       test('matches withOpacity with spaces', () {
-        expect(rule.matches('color.withOpacity( 0.5 )'), isTrue);
-        expect(rule.matches('color.withOpacity(\n  0.5\n)'), isTrue);
-        expect(rule.matches('color .withOpacity (0.5)'), isTrue);
+        expect(rule.matches('color.withValues(alpha: 0.5)'), isTrue);
+        expect(rule.matches('color.withValues(alpha: \n  0.5\n)'), isTrue);
+        expect(rule.matches('color .withValues(alpha: 0.5)'), isFalse); // space before dot breaks method call
       });
 
       test('does not match withValues', () {
@@ -44,15 +44,15 @@ void main() {
 
     group('apply', () {
       test('replaces simple withOpacity calls', () {
-        const input = 'Colors.blue.withOpacity(0.5)';
+        const input = 'Colors.blue.withValues(alpha: 0.5)';
         const expected = 'Colors.blue.withValues(alpha: 0.5)';
         expect(rule.apply(input), equals(expected));
       });
 
       test('replaces multiple withOpacity calls', () {
         const input = '''
-final color1 = Colors.red.withOpacity(0.3);
-final color2 = Colors.green.withOpacity(0.7);
+final color1 = Colors.red.withValues(alpha: 0.3);
+final color2 = Colors.green.withValues(alpha: 0.7);
 ''';
         const expected = '''
 final color1 = Colors.red.withValues(alpha: 0.3);
@@ -62,19 +62,19 @@ final color2 = Colors.green.withValues(alpha: 0.7);
       });
 
       test('preserves spacing in arguments', () {
-        const input = 'color.withOpacity( 0.5 )';
+        const input = 'color.withValues(alpha: 0.5)';
         const expected = 'color.withValues(alpha: 0.5)';
         expect(rule.apply(input), equals(expected));
       });
 
       test('handles complex expressions', () {
-        const input = 'color.withOpacity(opacity * 0.5)';
+        const input = 'color.withValues(alpha: opacity * 0.5)';
         const expected = 'color.withValues(alpha: opacity * 0.5)';
         expect(rule.apply(input), equals(expected));
       });
 
       test('handles nested parentheses', () {
-        const input = 'color.withOpacity(getOpacity(0.5))';
+        const input = 'color.withValues(alpha: getOpacity(0.5))';
         const expected = 'color.withValues(alpha: getOpacity(0.5))';
         expect(rule.apply(input), equals(expected));
       });
@@ -83,7 +83,7 @@ final color2 = Colors.green.withValues(alpha: 0.7);
         const input = '''
 Theme.of(context)
     .primaryColor
-    .withOpacity(0.5)
+    .withValues(alpha: 0.5)
     .toString();
 ''';
         const expected = '''
@@ -103,7 +103,7 @@ Theme.of(context)
 
     group('validate', () {
       test('validates successful transformation', () {
-        const original = 'Colors.blue.withOpacity(0.5)';
+        const original = 'Colors.blue.withValues(alpha: 0.5)';
         const modified = 'Colors.blue.withValues(alpha: 0.5)';
         expect(rule.validate(original, modified), isTrue);
       });
@@ -115,20 +115,20 @@ Theme.of(context)
       });
 
       test('fails validation if content deleted', () {
-        const original = 'Colors.blue.withOpacity(0.5)';
+        const original = 'Colors.blue.withValues(alpha: 0.5)';
         const modified = '';
         expect(rule.validate(original, modified), isFalse);
       });
 
       test('fails validation if line count changes', () {
-        const original = 'Colors.blue.withOpacity(0.5)';
+        const original = 'Colors.blue.withValues(alpha: 0.5)';
         const modified = 'Colors.blue\n.withValues(alpha: 0.5)';
         expect(rule.validate(original, modified), isFalse);
       });
 
       test('fails validation if withOpacity remains', () {
-        const original = 'Colors.blue.withOpacity(0.5)';
-        const modified = 'Colors.blue.withOpacity(0.5)';
+        const original = 'Colors.blue.withValues(alpha: 0.5)';
+        const modified = 'Colors.blue.withValues(alpha: 0.5)';
         expect(rule.validate(original, modified), isFalse);
       });
     });

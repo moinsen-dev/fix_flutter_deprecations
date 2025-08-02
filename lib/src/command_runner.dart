@@ -1,16 +1,20 @@
+import 'dart:io';
+
 import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
 import 'package:cli_completion/cli_completion.dart';
 import 'package:fix_flutter_deprecations/src/commands/commands.dart';
+import 'package:fix_flutter_deprecations/src/models/models.dart';
+import 'package:fix_flutter_deprecations/src/processors/processors.dart';
+import 'package:fix_flutter_deprecations/src/rules/rules.dart';
+import 'package:fix_flutter_deprecations/src/utils/utils.dart';
 import 'package:fix_flutter_deprecations/src/version.dart';
 import 'package:mason_logger/mason_logger.dart';
 import 'package:pub_updater/pub_updater.dart';
 
 const executableName = 'fix_deprecations';
 const packageName = 'fix_flutter_deprecations';
-const description =
-    'A powerful and extensible Dart CLI tool that '
-    'automatically fixes Flutter deprecations in your codebase';
+const description = 'Flutter Deprecation Fixer';
 
 /// {@template fix_flutter_deprecations_command_runner}
 /// A [CommandRunner] for the CLI.
@@ -29,23 +33,78 @@ class FixFlutterDeprecationsCommandRunner extends CompletionCommandRunner<int> {
     argParser
       ..addFlag(
         'version',
-        abbr: 'v',
         negatable: false,
         help: 'Print the current version.',
       )
       ..addFlag(
         'verbose',
-        help: 'Noisy logging, including all shell commands executed.',
+        abbr: 'v',
+        help: 'Show detailed output',
+        negatable: false,
+      )
+      ..addFlag(
+        'list-rules',
+        abbr: 'l',
+        help: 'List all available deprecation rules',
+        negatable: false,
+      )
+      ..addFlag(
+        'dry-run',
+        abbr: 'd',
+        help: 'Show what would be changed without making changes',
+        negatable: false,
+      )
+      ..addFlag(
+        'backup',
+        abbr: 'b',
+        help: 'Create backup files (.bak)',
+        negatable: false,
+      )
+      ..addMultiOption(
+        'rules',
+        abbr: 'r',
+        help: 'Comma-separated list of rules to apply (default: all)',
       );
 
     // Add sub commands
-    addCommand(FixCommand(logger: _logger));
-    addCommand(ListCommand(logger: _logger));
     addCommand(UpdateCommand(logger: _logger, pubUpdater: _pubUpdater));
   }
 
   @override
-  void printUsage() => _logger.info(usage);
+  void printUsage() {
+    _logger.info('''
+Flutter Deprecation Fixer
+
+Usage: $executableName [OPTIONS] [target]
+
+Options:
+  -b, --backup          Create backup files (.bak)
+  -d, --dry-run         Show what would be changed without making changes
+  -v, --verbose         Show detailed output
+  -r, --rules RULES     Comma-separated list of rules to apply (default: all)
+  -l, --list-rules      List all available deprecation rules
+  -h, --help            Show this help message
+      --version         Print the current version
+
+Arguments:
+  target                Path to file or directory (default: current directory)
+
+Examples:
+  $executableName                              # Fix all deprecations in current directory
+  $executableName -l                           # List available rules
+  $executableName -r withOpacity lib/          # Fix only withOpacity deprecations
+  $executableName -d -v lib/                   # Dry run with verbose output
+  $executableName -b path/to/file.dart         # Fix single file with backup
+
+By default, NO backup files are created (assuming you use version control).
+Use -b flag if you want backup files.
+
+Supported deprecations:
+  - withOpacity → withValues(alpha: ...)
+  - surfaceContainerHighest → surfaceContainerHighest
+  - onSurface → onSurface
+''');
+  }
 
   final Logger _logger;
   final PubUpdater _pubUpdater;
@@ -86,42 +145,168 @@ class FixFlutterDeprecationsCommandRunner extends CompletionCommandRunner<int> {
       return ExitCode.success.code;
     }
 
-    // Verbose logs
-    _logger
-      ..detail('Argument information:')
-      ..detail('  Top level options:');
-    for (final option in topLevelResults.options) {
-      if (topLevelResults.wasParsed(option)) {
-        _logger.detail('  - $option: ${topLevelResults[option]}');
-      }
-    }
-    if (topLevelResults.command != null) {
-      final commandResult = topLevelResults.command!;
-      _logger
-        ..detail('  Command: ${commandResult.name}')
-        ..detail('    Command options:');
-      for (final option in commandResult.options) {
-        if (commandResult.wasParsed(option)) {
-          _logger.detail('    - $option: ${commandResult[option]}');
-        }
-      }
-    }
-
-    // Run the command or show version
-    final int? exitCode;
+    // Handle version flag
     if (topLevelResults['version'] == true) {
       _logger.info(packageVersion);
-      exitCode = ExitCode.success.code;
-    } else {
-      exitCode = await super.runCommand(topLevelResults);
+      await _checkForUpdates();
+      return ExitCode.success.code;
     }
+
+    // Handle help flag or no arguments
+    if (topLevelResults.arguments.isEmpty) {
+      printUsage();
+      return ExitCode.success.code;
+    }
+
+    // Handle list-rules flag
+    if (topLevelResults['list-rules'] == true) {
+      await _listRules(topLevelResults['verbose'] as bool);
+      return ExitCode.success.code;
+    }
+
+    // If there's a subcommand, run it
+    if (topLevelResults.command != null) {
+      final exitCode = await super.runCommand(topLevelResults);
+      // Check for updates
+      if (topLevelResults.command?.name != UpdateCommand.commandName) {
+        await _checkForUpdates();
+      }
+      return exitCode;
+    }
+
+    // Otherwise, run the fix command with the provided options
+    final exitCode = await _runFixCommand(topLevelResults);
 
     // Check for updates
-    if (topLevelResults.command?.name != UpdateCommand.commandName) {
-      await _checkForUpdates();
-    }
+    await _checkForUpdates();
 
     return exitCode;
+  }
+
+  /// Lists all available deprecation fix rules
+  Future<void> _listRules(bool verbose) async {
+    _logger.info('Available Flutter deprecation fix rules:\n');
+
+    for (final rule in RuleRegistry.allRules) {
+      if (verbose) {
+        _logger
+          ..info(lightCyan.wrap('• ${rule.name}') ?? rule.name)
+          ..info('  Description: ${rule.description}')
+          ..info('  Pattern: ${rule.deprecatedPattern}')
+          ..info('  Replacement: ${rule.replacementExample}')
+          ..info('');
+      } else {
+        final name = lightCyan.wrap(rule.name) ?? rule.name;
+        _logger.info('• $name - ${rule.description}');
+      }
+    }
+
+    if (!verbose) {
+      _logger
+        ..info('')
+        ..info(
+          'Use ${lightCyan.wrap('--verbose')} flag for detailed information',
+        );
+    }
+
+    _logger
+      ..info('')
+      ..info(
+        'To apply specific rules, use: '
+        '${lightCyan.wrap('$executableName --rules rule1,rule2')}',
+      );
+  }
+
+  /// Runs the fix command with default behavior
+  Future<int> _runFixCommand(ArgResults topLevelResults) async {
+    final stopwatch = Stopwatch()..start();
+
+    // Get target path from rest arguments or use current directory
+    final targetPath = topLevelResults.rest.isEmpty
+        ? '.'
+        : topLevelResults.rest.first;
+
+    // Parse options
+    final options = FixOptions(
+      targetPath: targetPath,
+      dryRun: topLevelResults['dry-run'] as bool,
+      backup: topLevelResults['backup'] as bool,
+      verbose: topLevelResults['verbose'] as bool,
+      rules: (topLevelResults['rules'] as List<String>).isEmpty
+          ? null
+          : topLevelResults['rules'] as List<String>,
+    );
+
+    // Show dry run notice
+    if (options.dryRun) {
+      _logger.dryRunNotice();
+    }
+
+    // Validate rules if specified
+    if (options.rules != null) {
+      final invalidRules = RuleRegistry.getInvalidRuleNames(options.rules!);
+      if (invalidRules.isNotEmpty) {
+        _logger
+          ..err('Unknown rules: ${invalidRules.join(', ')}')
+          ..info(
+            'Available rules: ${RuleRegistry.availableRuleNames.join(', ')}',
+          );
+        return ExitCode.usage.code;
+      }
+    }
+
+    // Find Dart files
+    List<File> files;
+    try {
+      files = await FileUtils.findDartFiles(options.targetPath);
+
+      if (files.isEmpty) {
+        _logger.warn('No Dart files found in ${options.targetPath}');
+        return ExitCode.success.code;
+      }
+
+      _logger.info('Found ${files.length} Dart file(s) to process');
+
+      // Create file processor
+      final processor = FileProcessor(logger: _logger);
+
+      // Process files
+      final results = await processor.processFiles(files, options);
+
+      // Count results
+      final modifiedCount = results.where((r) => r.hasChanges).length;
+      final errorCount = results.where((r) => r.isFailure).length;
+
+      // Show summary
+      _logger.fixSummary(
+        totalFiles: files.length,
+        filesModified: modifiedCount,
+        filesWithErrors: errorCount,
+        elapsed: stopwatch.elapsed,
+      );
+
+      // Run dart analyze if not in dry run mode and files were modified
+      if (!options.dryRun && modifiedCount > 0) {
+        _logger.info('Running dart analyze to verify changes...');
+        final analyzer = DartAnalyzer(logger: _logger);
+        final analysisSuccess = await analyzer.validateProject();
+
+        if (!analysisSuccess) {
+          _logger.warn(
+            'Some files have analysis issues. '
+            'You may need to manually fix them.',
+          );
+        }
+      }
+
+      return errorCount > 0 ? ExitCode.software.code : ExitCode.success.code;
+    } on FileSystemException catch (e) {
+      _logger.err('File system error: ${e.message}');
+      return ExitCode.ioError.code;
+    } on Exception catch (e) {
+      _logger.err('Unexpected error: $e');
+      return ExitCode.software.code;
+    }
   }
 
   /// Checks if the current version (set by the build runner on the
