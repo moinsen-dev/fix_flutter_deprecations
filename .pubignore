@@ -1,0 +1,23 @@
+# Development files
+CLAUDE.md
+IMPLEMENTATION_PLAN.md
+Makefile
+fix_flutter_deprecations.sh
+dart_test.yaml
+test_cli
+coverage_badge.svg
+
+# Images (link from GitHub instead)
+images/
+
+# Coverage reports
+coverage/
+.coverage/
+
+# IDE files
+.idea/
+.vscode/
+
+# Build artifacts
+build/
+.dart_tool/build/

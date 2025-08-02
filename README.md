@@ -1,7 +1,7 @@
 # Fix Flutter Deprecations
 
 <p align="center">
-  <img src="images/fix_deprecations_logo.png" alt="Fix Flutter Deprecations Logo" width="200"/>
+  <img src="https://raw.githubusercontent.com/moinsen-dev/fix_flutter_deprecations/main/images/fix_deprecations_logo.png" alt="Fix Flutter Deprecations Logo" width="200"/>
 </p>
 
 <p align="center">
@@ -14,7 +14,7 @@
 A powerful and extensible Dart command-line tool that automatically fixes Flutter deprecations in your codebase. As Flutter evolves, APIs get deprecated and replaced with new ones. This tool helps you migrate your codebase efficiently by automatically applying common deprecation fixes.
 
 <p align="center">
-  <img src="images/fix_deprecations_wallpaper.png" alt="Fix Flutter Deprecations in action" width="800"/>
+  <img src="https://raw.githubusercontent.com/moinsen-dev/fix_flutter_deprecations/main/images/fix_deprecations_wallpaper.png" alt="Fix Flutter Deprecations in action" width="800"/>
 </p>
 
 ## Features ✨
