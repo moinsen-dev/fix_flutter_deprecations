@@ -114,3 +114,30 @@ publish-check: verify pana ## Run all checks before publishing
 publish: publish-check ## Publish to pub.dev
 	@echo "Publishing to pub.dev..."
 	@dart pub publish
+
+.PHONY: release
+release: ## Create a new release (usage: make release VERSION=1.2.3)
+	@if [ -z "$(VERSION)" ]; then \
+		echo "Usage: make release VERSION=x.y.z"; \
+		echo "Example: make release VERSION=0.1.3"; \
+		exit 1; \
+	fi
+	@./scripts/release.sh $(VERSION)
+
+.PHONY: release-interactive
+release-interactive: ## Create a new release with interactive version input
+	@./scripts/release.sh
+
+.PHONY: tag-check
+tag-check: ## Check if current version has a git tag
+	@VERSION=$$(grep '^version:' pubspec.yaml | sed 's/version: //'); \
+	if git tag -l | grep -q "^v$$VERSION$$"; then \
+		echo "✅ Tag v$$VERSION exists"; \
+	else \
+		echo "❌ Tag v$$VERSION does not exist"; \
+		echo "Run 'make release VERSION=$$VERSION' to create it"; \
+	fi
+
+.PHONY: current-version
+current-version: ## Show current version
+	@grep '^version:' pubspec.yaml | sed 's/version: //'

@@ -20,19 +20,42 @@ A powerful and extensible Dart command-line tool that automatically fixes Flutte
 ## Features ✨
 
 - **Automatic Deprecation Fixes**: Automatically updates deprecated Flutter APIs to their modern equivalents
+- **Intelligent Code Transformation**: Smart handling of complex widget migrations like WillPopScope → PopScope
+- **Lint Rule Fixes**: Automatically resolves common linting issues like `use_build_context_synchronously`
 - **Extensible Architecture**: Easily add new deprecation rules as Flutter evolves
 - **Safe Operation**: Dry-run mode to preview changes before applying them
-- **Selective Fixes**: Apply specific deprecation fixes or all at once
+- **Selective Fixes**: Apply specific deprecation fixes or all at once (6+ rules available)
 - **Progress Tracking**: Clear feedback on what's being changed
 - **Backup Support**: Optional backup creation before making changes
 
 ## Currently Supported Deprecations
 
-| Deprecated API | Replacement | Flutter Version |
-|----------------|-------------|-----------------|
-| `.withOpacity(value)` | `.withValues(alpha: value)` | 3.27+ |
-| `surfaceVariant` | `surfaceContainerHighest` | Material 3 |
-| `onSurfaceVariant` | `onSurface` | Material 3 |
+| Rule | Deprecated API | Replacement | Flutter Version |
+|------|----------------|-------------|-----------------|
+| `withOpacity` | `.withOpacity(value)` | `.withValues(alpha: value)` | 3.27+ |
+| `surfaceContainerHighest` | `surfaceVariant` | `surfaceContainerHighest` | Material 3 |
+| `onSurface` | `onSurfaceVariant` | `onSurface` | Material 3 |
+| `willPopScope` | `WillPopScope` | `PopScope` | 3.12+ |
+| `multipleUnderscores` | Multiple underscores (`__identifier`) | Single underscore (`_identifier`) | Linting |
+| `buildContextAsync` | Unsafe BuildContext after async | Added mounted checks | Linting |
+
+### Detailed Rule Descriptions
+
+#### 🎨 **Flutter Widget Deprecations**
+- **`willPopScope`**: Converts deprecated `WillPopScope` to `PopScope` with intelligent callback transformation
+  - Simple boolean returns → `canPop` property
+  - Complex logic → `onPopInvoked` callbacks with proper navigation handling
+
+#### 🔧 **Linting Rule Fixes**
+- **`multipleUnderscores`**: Fixes "unnecessary use of multiple underscores" warnings
+  - Preserves generated code patterns and test mocks
+  - Converts `__identifier` to `_identifier` where appropriate
+
+- **`buildContextAsync`**: Fixes `use_build_context_synchronously` warnings  
+  - Detects BuildContext usage after async operations
+  - Adds `if (mounted)` checks for StatefulWidget
+  - Adds `if (context.mounted)` checks for other contexts
+  - Supports Navigator, showDialog, ScaffoldMessenger, Theme, and MediaQuery operations
 
 ## Installation 📦
 
@@ -65,7 +88,7 @@ fix_deprecations --dry-run
 ### Apply specific deprecation fixes
 
 ```sh
-fix_deprecations --rules withOpacity,surfaceVariant
+fix_deprecations --rules withOpacity,willPopScope,buildContextAsync
 ```
 
 ### Fix a specific file or directory
@@ -84,27 +107,91 @@ fix_deprecations --backup
 ### List all available deprecation rules
 
 ```sh
-fix_deprecations list
+fix_deprecations --list-rules
 ```
 
 ## Command Reference
 
 ```sh
 # Fix all deprecations in current directory
-fix_deprecations fix
+fix_deprecations
 
 # Fix with specific options
-fix_deprecations fix --dry-run --verbose
-fix_deprecations fix --rules withOpacity --backup lib/
+fix_deprecations --dry-run --verbose
+fix_deprecations --rules withOpacity,willPopScope --backup lib/
 
 # List available deprecation rules
-fix_deprecations list
+fix_deprecations --list-rules
 
 # Show version
 fix_deprecations --version
 
 # Show help
 fix_deprecations --help
+```
+
+## Examples 💡
+
+### WillPopScope to PopScope Migration
+
+**Before:**
+```dart
+WillPopScope(
+  onWillPop: () async {
+    return await showDialog(...);
+  },
+  child: Scaffold(...),
+)
+```
+
+**After:**
+```dart
+PopScope(
+  canPop: false,
+  onPopInvoked: (bool didPop) async {
+    if (didPop) return;
+    final NavigatorState navigator = Navigator.of(context);
+    final bool shouldPop = await showDialog(...);
+    if (shouldPop) navigator.pop();
+  },
+  child: Scaffold(...),
+)
+```
+
+### BuildContext Async Safety
+
+**Before:**
+```dart
+Future<void> _handleSubmit() async {
+  await _submitForm();
+  Navigator.of(context).pop(); // ⚠️ use_build_context_synchronously
+}
+```
+
+**After:**
+```dart
+Future<void> _handleSubmit() async {
+  await _submitForm();
+  if (mounted) {
+    Navigator.of(context).pop(); // ✅ Safe to use
+  }
+}
+```
+
+### Multiple Underscores Fix
+
+**Before:**
+```dart
+class MyClass {
+  String __privateField; // ⚠️ unnecessary multiple underscores
+}
+```
+
+**After:**
+```dart
+class MyClass {
+  String _privateField; // ✅ Single underscore
+}
 ```
 
 ## Running Tests with coverage 🧪

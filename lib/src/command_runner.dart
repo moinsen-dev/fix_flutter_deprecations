@@ -103,6 +103,8 @@ Supported deprecations:
   - withOpacity → withValues(alpha: ...)
   - surfaceContainerHighest → surfaceContainerHighest
   - onSurface → onSurface
+  - WillPopScope → PopScope
+  - Multiple underscores → Single underscore
 ''');
   }
 

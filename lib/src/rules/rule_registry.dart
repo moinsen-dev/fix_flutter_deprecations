@@ -1,6 +1,9 @@
+import 'package:fix_flutter_deprecations/src/rules/build_context_async_rule.dart';
 import 'package:fix_flutter_deprecations/src/rules/deprecation_rule.dart';
+import 'package:fix_flutter_deprecations/src/rules/multiple_underscores_rule.dart';
 import 'package:fix_flutter_deprecations/src/rules/on_surface_variant_rule.dart';
 import 'package:fix_flutter_deprecations/src/rules/surface_variant_rule.dart';
+import 'package:fix_flutter_deprecations/src/rules/will_pop_scope_rule.dart';
 import 'package:fix_flutter_deprecations/src/rules/with_opacity_rule.dart';
 
 /// Registry of all available deprecation rules.
@@ -13,6 +16,9 @@ class RuleRegistry {
     WithOpacityRule(),
     SurfaceVariantRule(),
     OnSurfaceVariantRule(),
+    WillPopScopeRule(),
+    MultipleUnderscoresRule(),
+    BuildContextAsyncRule(),
   ];
 
   /// Gets all available rule names.

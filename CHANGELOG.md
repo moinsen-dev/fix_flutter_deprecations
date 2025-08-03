@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.2] - 2025-08-03
+
+### Added
+- **WillPopScope to PopScope Migration**: Automatically converts deprecated `WillPopScope` widgets to `PopScope` with intelligent callback transformation
+  - Handles simple boolean returns by converting to `canPop` property
+  - Transforms complex logic into `onPopInvoked` callbacks with proper navigation handling
+- **Multiple Underscores Lint Fix**: Automatically fixes "unnecessary use of multiple underscores" warnings
+  - Intelligently preserves generated code patterns and test mocks
+  - Converts multiple underscores to single underscores where appropriate
+- **BuildContext Async Safety**: Fixes `use_build_context_synchronously` lint warnings by adding mounted checks
+  - Automatically detects BuildContext usage after async operations
+  - Adds appropriate mounted checks (`if (mounted)` for StatefulWidget, `if (context.mounted)` for others)
+  - Supports Navigator, showDialog, ScaffoldMessenger, Theme, and MediaQuery operations
+  - Maintains proper code indentation and formatting
+
+### Enhanced
+- Extended rule registry to support 6 total deprecation rules
+- Improved pattern matching with more sophisticated regex handling
+- Enhanced validation logic for complex code transformations
+
 ## [0.1.1] - 2025-08-02
 
 ### Fixed
@@ -37,6 +57,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Detailed error reporting and recovery
 - Platform support for Windows, macOS, and Linux
 
-[Unreleased]: https://github.com/moinsen-dev/fix_flutter_deprecations/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/moinsen-dev/fix_flutter_deprecations/compare/v0.1.2...HEAD
+[0.1.2]: https://github.com/moinsen-dev/fix_flutter_deprecations/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/moinsen-dev/fix_flutter_deprecations/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/moinsen-dev/fix_flutter_deprecations/releases/tag/v0.1.0

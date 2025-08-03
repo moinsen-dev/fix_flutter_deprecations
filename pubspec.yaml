@@ -1,6 +1,6 @@
 name: fix_flutter_deprecations
 description: A powerful and extensible Dart CLI tool that automatically fixes Flutter deprecations in your codebase
-version: 0.1.1
+version: 0.1.2
 homepage: https://github.com/moinsen-dev/fix_flutter_deprecations
 repository: https://github.com/moinsen-dev/fix_flutter_deprecations
 issue_tracker: https://github.com/moinsen-dev/fix_flutter_deprecations/issues
