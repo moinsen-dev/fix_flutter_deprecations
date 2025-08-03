@@ -74,15 +74,17 @@ class BuildContextAsyncRule extends DeprecationRule {
         _hasUnprotectedMatch(content, _contextPattern);
   }
 
-  /// Checks if pattern matches and the match doesn't already have a mounted check.
+  /// Checks if pattern matches and the match doesn't already have a mounted
+  /// check.
   bool _hasUnprotectedMatch(String content, RegExp pattern) {
     final matches = pattern.allMatches(content);
     for (final match in matches) {
       final fullMatch = match.group(0)!;
       final betweenPart = match.group(2) ?? '';
-      
+
       // Check if there's already a mounted check
-      if (!betweenPart.contains('mounted') && !fullMatch.contains('if (mounted)') && 
+      if (!betweenPart.contains('mounted') &&
+          !fullMatch.contains('if (mounted)') &&
           !fullMatch.contains('if (context.mounted)')) {
         return true;
       }
@@ -104,11 +106,17 @@ class BuildContextAsyncRule extends DeprecationRule {
     final contextVarName = contextParamMatch?.group(1) ?? 'context';
 
     // Apply fixes for different patterns
-    result = _fixPattern(result, _navigatorPattern, isStatefulWidget, contextVarName);
-    result = _fixPattern(result, _showDialogPattern, isStatefulWidget, contextVarName);
-    result = _fixPattern(result, _scaffoldMessengerPattern, isStatefulWidget, contextVarName);
-    result = _fixPattern(result, _themePattern, isStatefulWidget, contextVarName);
-    result = _fixPattern(result, _contextPattern, isStatefulWidget, contextVarName);
+    final patterns = [
+      _navigatorPattern,
+      _showDialogPattern,
+      _scaffoldMessengerPattern,
+      _themePattern,
+      _contextPattern,
+    ];
+
+    for (final pattern in patterns) {
+      result = _fixPattern(result, pattern, isStatefulWidget, contextVarName);
+    }
 
     return result;
   }
@@ -126,7 +134,8 @@ class BuildContextAsyncRule extends DeprecationRule {
       final contextUsage = match.group(3)!;
 
       // Check if there's already a mounted check nearby
-      if (whitespacePart.contains('mounted') || contextUsage.contains('mounted')) {
+      if (whitespacePart.contains('mounted') ||
+          contextUsage.contains('mounted')) {
         return match.group(0)!;
       }
 
@@ -143,13 +152,13 @@ class BuildContextAsyncRule extends DeprecationRule {
       final indentation = lastLine; // This should contain the indentation
 
       // Build the fixed code
-      final buffer = StringBuffer();
-      buffer.write(awaitPart);
-      buffer.write('\n$indentation');
-      buffer.write(mountedCheck);
-      buffer.write(' {\n$indentation  ');
-      buffer.write(contextUsage.trim());
-      buffer.write('\n$indentation}');
+      final buffer = StringBuffer()
+        ..write(awaitPart)
+        ..write('\n$indentation')
+        ..write(mountedCheck)
+        ..write(' {\n$indentation  ')
+        ..write(contextUsage.trim())
+        ..write('\n$indentation}');
 
       return buffer.toString();
     });
@@ -184,35 +193,36 @@ class BuildContextAsyncRule extends DeprecationRule {
 
     // For this rule, we expect to add brackets (for if statements)
     // So we skip the bracket balance check and use a different approach
-    
+
     // If content hasn't changed and there were matches, that's a problem
     if (original == modified && matches(original)) {
       return false;
     }
-    
+
     // Check that we don't have any remaining unprotected patterns
     if (matches(modified)) {
       return false;
     }
 
     // Additional validation: ensure all added mounted checks have proper syntax
-    final mountedChecks = RegExp(r'if\s*\(\s*(?:context\.)?mounted\s*\)\s*\{')
-        .allMatches(modified);
-    
+    final mountedChecks = RegExp(
+      r'if\s*\(\s*(?:context\.)?mounted\s*\)\s*\{',
+    ).allMatches(modified);
+
     // Each mounted check should have a corresponding closing brace
     for (final match in mountedChecks) {
       final checkStart = match.start;
       final afterCheck = modified.substring(checkStart);
-      
+
       // Find the matching closing brace for the if statement
       final ifStart = afterCheck.indexOf('{');
       if (ifStart == -1) {
         return false; // No opening brace found
       }
-      
+
       var braceCount = 0;
       var foundClosing = false;
-      for (int i = ifStart; i < afterCheck.length; i++) {
+      for (var i = ifStart; i < afterCheck.length; i++) {
         final char = afterCheck[i];
         if (char == '{') {
           braceCount++;
@@ -224,7 +234,7 @@ class BuildContextAsyncRule extends DeprecationRule {
           }
         }
       }
-      
+
       if (!foundClosing) {
         return false;
       }
@@ -233,15 +243,4 @@ class BuildContextAsyncRule extends DeprecationRule {
     return true;
   }
 
-  /// Counts brackets in the content to ensure syntax isn't broken.
-  Map<String, int> _countBrackets(String content) {
-    return {
-      '(': content.split('(').length - 1,
-      ')': content.split(')').length - 1,
-      '{': content.split('{').length - 1,
-      '}': content.split('}').length - 1,
-      '[': content.split('[').length - 1,
-      ']': content.split(']').length - 1,
-    };
-  }
 }

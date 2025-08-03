@@ -67,9 +67,9 @@ void main() {
 class MyClass {
   String _field1;
   int _field2;
-  
+
   MyClass(this._field1, this._field2);
-  
+
   void _method() {
     var _local = 42;
   }
@@ -78,9 +78,9 @@ class MyClass {
 class MyClass {
   String _field1;
   int _field2;
-  
+
   MyClass(this._field1, this._field2);
-  
+
   void _method() {
     var _local = 42;
   }
@@ -121,7 +121,7 @@ class Example {
   String _singleUnderscore;  // Should not change
   String _doubleUnderscore; // Should change to _
   String _tripleUnderscore; // Should change to _
-  
+
   void _method1() {} // Should not change
   void _method2() {} // Should change to _
 }''';
@@ -130,7 +130,7 @@ class Example {
   String _singleUnderscore;  // Should not change
   String _doubleUnderscore; // Should change to _
   String _tripleUnderscore; // Should change to _
-  
+
   void _method1() {} // Should not change
   void _method2() {} // Should change to _
 }''';

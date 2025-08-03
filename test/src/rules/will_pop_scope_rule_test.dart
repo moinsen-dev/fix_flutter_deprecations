@@ -2,11 +2,11 @@ import 'package:fix_flutter_deprecations/src/rules/rules.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('PopScopeRule', () {
-    late PopScopeRule rule;
+  group('WillPopScopeRule', () {
+    late WillPopScopeRule rule;
 
     setUp(() {
-      rule = const PopScopeRule();
+      rule = const WillPopScopeRule();
     });
 
     test('has correct properties', () {
@@ -229,8 +229,7 @@ Column(
 
     group('validate', () {
       test('validates successful transformation', () {
-        const original =
-            'PopScope(canPop: true, child: Container())';
+        const original = 'PopScope(canPop: true, child: Container())';
         const modified = 'PopScope(canPop: true, child: Container())';
         expect(rule.validate(original, modified), isTrue);
       });
@@ -242,23 +241,19 @@ Column(
       });
 
       test('fails validation if content deleted', () {
-        const original =
-            'PopScope(canPop: true, child: Container())';
+        const original = 'PopScope(canPop: true, child: Container())';
         const modified = '';
         expect(rule.validate(original, modified), isFalse);
       });
 
       test('fails validation if PopScope remains', () {
-        const original =
-            'PopScope(canPop: true, child: Container())';
-        const modified =
-            'PopScope(canPop: true, child: Container())';
+        const original = 'PopScope(canPop: true, child: Container())';
+        const modified = 'PopScope(canPop: true, child: Container())';
         expect(rule.validate(original, modified), isFalse);
       });
 
       test('fails validation if PopScope not added', () {
-        const original =
-            'PopScope(canPop: true, child: Container())';
+        const original = 'PopScope(canPop: true, child: Container())';
         const modified = 'Container()';
         expect(rule.validate(original, modified), isFalse);
       });
