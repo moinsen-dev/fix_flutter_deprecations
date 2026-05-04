@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- `directivesOrdering`: alphabetically sorts `import`/`export` directives
+  inside their three groups (`dart:`, `package:`, relative). Multi-line
+  directives (`show`, `as`) are kept intact.
+- `strictRawType` now also handles bare `Map`/`List` used as a generic
+  argument (e.g. `isA<Map>()` → `isA<Map<String, dynamic>>()`).
+- `unreachableFromMain` now also tags class-member declarations (not
+  just top-level functions), with indent-aware ignore comments.
+
 ### Fixed
 - `OnSurfaceVariantRule` no longer rewrites `onSurfaceVariant` blindly.
   Material 3 still has both `onSurface` and `onSurfaceVariant` as

@@ -43,8 +43,9 @@ A powerful and extensible Dart command-line tool that automatically fixes Flutte
 | `avoidPrint` | Unguarded `print(...)` | `// ignore: avoid_print` + doc comment | Linting |
 | `flutterStyleTodos` | `// TODO: ...` | `// TODO(unassigned): ...` | Linting |
 | `unintendedHtmlDocComment` | `/// returns <Foo>` | `/// returns \`<Foo>\`` | Linting |
-| `unreachableFromMain` | Top-level test helpers (mock/fixture/seed/...) | `// ignore: unreachable_from_main` | Linting |
-| `strictRawType` | `Map<dynamic, dynamic>` | `Map<String, dynamic>` | Linting |
+| `unreachableFromMain` | Test helper functions/methods (mock/fixture/seed/...) | `// ignore: unreachable_from_main` | Linting |
+| `strictRawType` | `Map<dynamic, dynamic>`, bare `<Map>`/`<List>` | `Map<String, dynamic>` / `List<dynamic>` | Linting |
+| `directivesOrdering` | Unsorted imports/exports | Alphabetically sorted within `dart:`/`package:`/relative groups | Linting |
 | `removedLint` | Retired lint names in `analysis_options.yaml` | line removed | Tooling |
 | `sortPubDependencies` | Unsorted `dependencies:` in `pubspec.yaml` | Alphabetically sorted | Tooling |
 

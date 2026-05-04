@@ -3,6 +3,7 @@ export 'build_context_async_rule.dart';
 export 'cascade_invocations_rule.dart';
 export 'control_body_new_line_rule.dart';
 export 'deprecation_rule.dart';
+export 'directives_ordering_rule.dart';
 export 'flutter_style_todos_rule.dart';
 export 'multiple_underscores_rule.dart';
 export 'on_surface_variant_rule.dart';

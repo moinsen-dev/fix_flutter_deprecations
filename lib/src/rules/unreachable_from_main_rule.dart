@@ -34,8 +34,13 @@ class UnreachableFromMainRule extends DeprecationRule {
     'fake',
   ];
 
+  // Function/method declaration at any indent level. Captures:
+  //   1: leading whitespace (indent)
+  //   2: return type fragment (with trailing whitespace)
+  //   3: method name
   static final _topLevelFn = RegExp(
-    r'^(?!\s)([A-Za-z_][\w<>?,. ]*\s+)([a-zA-Z_]\w*)\s*\(',
+    r'^([ \t]*)(?:static\s+|@override\s+)*'
+    r'([A-Za-z_][\w<>?,. ]*\s+)([a-zA-Z_]\w*)\s*\(',
     multiLine: true,
   );
 
@@ -57,30 +62,35 @@ class UnreachableFromMainRule extends DeprecationRule {
     if (!content.contains('main(')) {
       return content;
     }
-    final replacements = <int>[];
+    final replacements = <_Insert>[];
     for (final match in _topLevelFn.allMatches(content)) {
       if (!_isCandidate(content, match)) {
         continue;
       }
-      replacements.add(_findLineStart(content, match.start));
+      replacements.add(
+        _Insert(
+          at: _findLineStart(content, match.start),
+          indent: match.group(1) ?? '',
+        ),
+      );
     }
     if (replacements.isEmpty) {
       return content;
     }
     final buffer = StringBuffer();
     var cursor = 0;
-    for (final at in replacements) {
+    for (final ins in replacements) {
       buffer
-        ..write(content.substring(cursor, at))
-        ..write('// ignore: unreachable_from_main\n');
-      cursor = at;
+        ..write(content.substring(cursor, ins.at))
+        ..write('${ins.indent}// ignore: unreachable_from_main\n');
+      cursor = ins.at;
     }
     buffer.write(content.substring(cursor));
     return buffer.toString();
   }
 
   bool _isCandidate(String content, RegExpMatch match) {
-    final name = match.group(2)!.toLowerCase();
+    final name = match.group(3)!.toLowerCase();
     if (name == 'main') {
       return false;
     }
@@ -108,4 +118,10 @@ class UnreachableFromMainRule extends DeprecationRule {
     }
     return i;
   }
+}
+
+class _Insert {
+  _Insert({required this.at, required this.indent});
+  final int at;
+  final String indent;
 }

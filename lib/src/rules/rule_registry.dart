@@ -3,6 +3,7 @@ import 'package:fix_flutter_deprecations/src/rules/build_context_async_rule.dart
 import 'package:fix_flutter_deprecations/src/rules/cascade_invocations_rule.dart';
 import 'package:fix_flutter_deprecations/src/rules/control_body_new_line_rule.dart';
 import 'package:fix_flutter_deprecations/src/rules/deprecation_rule.dart';
+import 'package:fix_flutter_deprecations/src/rules/directives_ordering_rule.dart';
 import 'package:fix_flutter_deprecations/src/rules/flutter_style_todos_rule.dart';
 import 'package:fix_flutter_deprecations/src/rules/multiple_underscores_rule.dart';
 import 'package:fix_flutter_deprecations/src/rules/on_surface_variant_rule.dart';
@@ -42,6 +43,7 @@ class RuleRegistry {
     UnintendedHtmlDocCommentRule(),
     UnreachableFromMainRule(),
     StrictRawTypeRule(),
+    DirectivesOrderingRule(),
     // Project-config rules (yaml files).
     RemovedLintRule(),
     SortPubDependenciesRule(),
