@@ -21,11 +21,16 @@ class RuleRegistry {
   RuleRegistry._();
 
   /// All available deprecation rules.
+  ///
+  /// Note: `OnSurfaceVariantRule` is intentionally **not** part of the
+  /// default set. `onSurfaceVariant` is still a distinct, valid color slot
+  /// in Material 3 — the substitution is unsafe for code that uses both
+  /// `onSurface` and `onSurfaceVariant`. The rule is still available via
+  /// [optionalRules] for projects that explicitly want the migration.
   static const List<DeprecationRule> allRules = [
     // Flutter / Material deprecations.
     WithOpacityRule(),
     SurfaceVariantRule(),
-    OnSurfaceVariantRule(),
     WillPopScopeRule(),
     // Lint rule fixes (Dart source files).
     MultipleUnderscoresRule(),
@@ -42,6 +47,17 @@ class RuleRegistry {
     SortPubDependenciesRule(),
   ];
 
+  /// Rules that are available via `--rules` but not enabled by default.
+  /// They have a higher false-positive risk.
+  static const List<DeprecationRule> optionalRules = [
+    OnSurfaceVariantRule(),
+  ];
+
+  /// Default rules + optional rules — every rule the user can address by
+  /// name via `--rules`.
+  static List<DeprecationRule> get _addressableRules =>
+      [...allRules, ...optionalRules];
+
   /// Gets all available rule names.
   static List<String> get availableRuleNames {
     return allRules.map((rule) => rule.name).toList();
@@ -49,21 +65,24 @@ class RuleRegistry {
 
   /// Gets rules by their names.
   ///
-  /// If [ruleNames] is null or empty, returns all rules.
-  /// Otherwise, returns only the rules matching the given names.
+  /// If [ruleNames] is null or empty, returns the default rule set.
+  /// Otherwise, returns matching rules — including [optionalRules] when
+  /// addressed by name.
   static List<DeprecationRule> getRules(List<String>? ruleNames) {
     if (ruleNames == null || ruleNames.isEmpty) {
       return allRules;
     }
 
     final requestedRules = <DeprecationRule>[];
-    final availableNames = availableRuleNames;
+    final addressable = _addressableRules;
+    final addressableNames = addressable.map((r) => r.name).toList();
 
     for (final name in ruleNames) {
-      final rule = allRules.firstWhere(
+      final rule = addressable.firstWhere(
         (r) => r.name == name,
         orElse: () => throw ArgumentError(
-          'Unknown rule: $name. Available rules: ${availableNames.join(', ')}',
+          'Unknown rule: $name. '
+          'Available rules: ${addressableNames.join(', ')}',
         ),
       );
       requestedRules.add(rule);
@@ -72,9 +91,9 @@ class RuleRegistry {
     return requestedRules;
   }
 
-  /// Gets a single rule by name.
+  /// Gets a single rule by name (default + optional).
   static DeprecationRule? getRule(String name) {
-    for (final rule in allRules) {
+    for (final rule in _addressableRules) {
       if (rule.name == name) {
         return rule;
       }
@@ -82,15 +101,15 @@ class RuleRegistry {
     return null;
   }
 
-  /// Validates that all requested rule names are valid.
+  /// Validates that all requested rule names are valid (default or optional).
   static bool validateRuleNames(List<String> ruleNames) {
-    final available = availableRuleNames.toSet();
+    final available = _addressableRules.map((r) => r.name).toSet();
     return ruleNames.every(available.contains);
   }
 
   /// Gets invalid rule names from the given list.
   static List<String> getInvalidRuleNames(List<String> ruleNames) {
-    final available = availableRuleNames.toSet();
+    final available = _addressableRules.map((r) => r.name).toSet();
     return ruleNames.where((name) => !available.contains(name)).toList();
   }
 }

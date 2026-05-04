@@ -28,13 +28,15 @@ void main() {
         );
       });
 
-      test('matches onSurfaceVariant in different contexts', () {
-        expect(rule.matches('color: onSurfaceVariant'), isTrue);
+      test('matches only property-access onSurfaceVariant', () {
+        // Property access — should match.
         expect(
           rule.matches('foregroundColor: colorScheme.onSurfaceVariant,'),
           isTrue,
         );
-        expect(rule.matches('final textColor = onSurfaceVariant;'), isTrue);
+        // Bare identifier (named param / variable) — should NOT match.
+        expect(rule.matches('color: onSurfaceVariant'), isFalse);
+        expect(rule.matches('final textColor = onSurfaceVariant;'), isFalse);
       });
 
       test('does not match partial words', () {

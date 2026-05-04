@@ -4,12 +4,11 @@ import 'package:test/test.dart';
 void main() {
   group('RuleRegistry', () {
     test('allRules contains all expected rules', () {
-      expect(RuleRegistry.allRules.length, equals(15));
+      expect(RuleRegistry.allRules.length, equals(14));
 
       final ruleTypes = RuleRegistry.allRules.map((r) => r.runtimeType).toSet();
       expect(ruleTypes, contains(WithOpacityRule));
       expect(ruleTypes, contains(SurfaceVariantRule));
-      expect(ruleTypes, contains(OnSurfaceVariantRule));
       expect(ruleTypes, contains(WillPopScopeRule));
       expect(ruleTypes, contains(MultipleUnderscoresRule));
       expect(ruleTypes, contains(BuildContextAsyncRule));
@@ -18,10 +17,9 @@ void main() {
     test('availableRuleNames returns all rule names', () {
       final names = RuleRegistry.availableRuleNames;
 
-      expect(names.length, equals(15));
+      expect(names.length, equals(14));
       expect(names, contains('withOpacity'));
       expect(names, contains('surfaceContainerHighest'));
-      expect(names, contains('onSurface'));
       expect(names, contains('willPopScope'));
       expect(names, contains('multipleUnderscores'));
       expect(names, contains('buildContextAsync'));
@@ -30,12 +28,12 @@ void main() {
     group('getRules', () {
       test('returns all rules when ruleNames is null', () {
         final rules = RuleRegistry.getRules(null);
-        expect(rules.length, equals(15));
+        expect(rules.length, equals(14));
       });
 
       test('returns all rules when ruleNames is empty', () {
         final rules = RuleRegistry.getRules([]);
-        expect(rules.length, equals(15));
+        expect(rules.length, equals(14));
       });
 
       test('returns specific rules by name', () {

@@ -28,14 +28,15 @@ class OnSurfaceVariantRule extends DeprecationRule {
   @override
   String get replacementExample => 'onSurface';
 
-  /// Pattern to match onSurface usage.
-  /// Matches:
-  /// - colorScheme.onSurface
-  /// - theme.colorScheme.onSurface
-  /// - Theme.of(context).colorScheme.onSurface
-  /// - color: onSurface (in specific contexts)
+  /// Match `.onSurfaceVariant` only — i.e. property access, never a
+  /// named-parameter use like `ColorScheme(onSurfaceVariant: …)` where
+  /// `onSurfaceVariant` is still a distinct, valid Material 3 slot.
+  ///
+  /// Even in property-access contexts the substitution is debatable
+  /// (`onSurfaceVariant` and `onSurface` are *different* colors in M3),
+  /// so this rule is deliberately not part of the default rule set.
   static final _pattern = RegExp(
-    r'\bonSurfaceVariant\b',
+    r'\.onSurfaceVariant\b',
     multiLine: true,
   );
 
@@ -49,9 +50,8 @@ class OnSurfaceVariantRule extends DeprecationRule {
     if (!matches(content)) {
       return content;
     }
-
-    // Replace all occurrences of onSurface with onSurface
-    return content.replaceAll(_pattern, 'onSurface');
+    // Pattern includes the leading `.` so we re-emit it.
+    return content.replaceAll(_pattern, '.onSurface');
   }
 
   @override

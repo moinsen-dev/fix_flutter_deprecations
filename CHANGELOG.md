@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- `OnSurfaceVariantRule` no longer rewrites `onSurfaceVariant` blindly.
+  Material 3 still has both `onSurface` and `onSurfaceVariant` as
+  *distinct* color slots, so the previous rule produced
+  `duplicate_named_argument` errors on real Flutter projects. The rule
+  is now (a) limited to property-access form (`.onSurfaceVariant`) and
+  (b) **moved out of the default rule set** into an opt-in pool. To
+  use it explicitly: `--rules onSurface`.
+
 ## [0.2.0] - 2026-05-04
 
 ### Added
