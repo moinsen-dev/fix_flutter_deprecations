@@ -7,39 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
-- `directivesOrdering`: alphabetically sorts `import`/`export` directives
-  inside their three groups (`dart:`, `package:`, relative). Multi-line
-  directives (`show`, `as`) are kept intact.
-- `strictRawType` now also handles bare `Map`/`List` used as a generic
-  argument (e.g. `isA<Map>()` → `isA<Map<String, dynamic>>()`).
-- `unreachableFromMain` now also tags class-member declarations (not
-  just top-level functions), with indent-aware ignore comments.
-
-### Fixed
-- `OnSurfaceVariantRule` no longer rewrites `onSurfaceVariant` blindly.
-  Material 3 still has both `onSurface` and `onSurfaceVariant` as
-  *distinct* color slots, so the previous rule produced
-  `duplicate_named_argument` errors on real Flutter projects. The rule
-  is now (a) limited to property-access form (`.onSurfaceVariant`) and
-  (b) **moved out of the default rule set** into an opt-in pool. To
-  use it explicitly: `--rules onSurface`.
-
 ## [0.2.0] - 2026-05-04
 
 ### Added
-- **9 new lint-fix rules** that complement `dart fix` for `very_good_analysis`-style projects:
+- **10 new lint-fix rules** that complement `dart fix` for `very_good_analysis`-style projects:
   - `cascadeInvocations`: collapse runs of `obj.a(); obj.b(); obj.c();` into a cascade chain. Skips capitalized receivers (static calls on classes) and any run that contains an assignment.
   - `controlBodyNewLine`: rewrite inline `if (x) y;` / `for (...)` / `while (...)` to a braced 3-line form, satisfying both `always_put_control_body_on_new_line` and `curly_braces_in_flow_control_structures`.
   - `avoidPrint`: insert a documented `// ignore: avoid_print` above any unguarded `print(...)` call. Skips files with a file-level `// ignore_for_file: avoid_print` directive and ignores `print` mentions inside string literals or comments.
   - `flutterStyleTodos`: rewrite unnamed `// TODO:` (and `/// TODO:`) comments to the Flutter `// TODO(unassigned):` style.
   - `unintendedHtmlDocComment`: wrap `<Type>` style fragments inside `///` doc comments in backticks. Allowed HTML tags (`<br>`, `<p>`, `<a>`, `<code>`, ...) are left alone.
-  - `unreachableFromMain`: heuristically tag top-level test helpers (functions whose names contain `mock`, `setup`, `helper`, `seed`, `fixture`, `stub`, or `fake`) with `// ignore: unreachable_from_main`.
-  - `strictRawType`: replace `Map<dynamic, dynamic>` with `Map<String, dynamic>`.
+  - `unreachableFromMain`: heuristically tag test helpers (top-level functions **and class members** whose names contain `mock`, `setup`, `helper`, `seed`, `fixture`, `stub`, or `fake`) with an indent-aware `// ignore: unreachable_from_main`.
+  - `strictRawType`: replace `Map<dynamic, dynamic>` with `Map<String, dynamic>`, and bare `Map`/`List` used as generic arguments (e.g. `isA<Map>()` → `isA<Map<String, dynamic>>()`).
+  - `directivesOrdering`: alphabetically sort `import`/`export` directives within `dart:`, `package:`, and relative groups. Multi-line `show`/`as` clauses are preserved.
   - `removedLint`: remove retired lint names (e.g. `package_api_docs`, `iterable_contains_unrelated_type`, ...) from `analysis_options.yaml`.
   - `sortPubDependencies`: alphabetically sort `dependencies:`, `dev_dependencies:` and `dependency_overrides:` blocks in `pubspec.yaml` while preserving comments and multi-line entries.
 - **YAML support**: rules can now declare `appliesToExtensions` to target project-config files (`pubspec.yaml`, `analysis_options.yaml`) in addition to `.dart` source files. The CLI scans config files at the project root automatically.
 - **Generated-area exclusion**: `.dart_tool/`, `build/`, `.fvm/` directories are skipped during traversal.
+- **File-level opt-out marker**: a file containing `// fix_flutter_deprecations: ignore_file` near the top is left untouched. Useful for test fixtures that contain the very patterns rules look for.
+- **Optional rule pool**: rules with a higher false-positive risk live in `RuleRegistry.optionalRules` and only run when explicitly invoked via `--rules`. Currently contains `OnSurfaceVariantRule` (Material 3 keeps `onSurface` and `onSurfaceVariant` as distinct color slots, so a blind rename can produce `duplicate_named_argument` errors).
 
 ### Fixed
 - `--help` / `-h` now prints usage instead of starting to process files.
