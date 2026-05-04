@@ -87,19 +87,28 @@ Options:
       --version         Print the current version
 
 Arguments:
-  target                Path to file or directory (default: current directory)
+  target                Path to a file, directory, or project root
+                        (default: current directory).
+                        Project roots are also scanned for pubspec.yaml
+                        and analysis_options.yaml.
 
 Examples:
-  $executableName                              # Fix all deprecations in current directory
-  $executableName -l                           # List available rules
-  $executableName -r withOpacity lib/          # Fix only withOpacity deprecations
-  $executableName -d -v lib/                   # Dry run with verbose output
-  $executableName -b path/to/file.dart         # Fix single file with backup
+  $executableName                              # Fix everything in current dir + yaml configs
+  $executableName -l                           # List the 15 available rules
+  $executableName -d                           # Dry run — preview without writing
+  $executableName -r cascadeInvocations lib/   # Apply only one rule
+  $executableName -r sortPubDependencies .     # Sort pubspec.yaml dependencies
+  $executableName -d -v .                      # Dry run with verbose per-file output
+  $executableName -b path/to/file.dart         # Fix single file, leave a .backup
 
-By default, NO backup files are created (assuming you use version control).
-Use -b flag if you want backup files.
+Notes:
+  - Files matching .g.dart and .freezed.dart are skipped.
+  - .dart_tool/, build/, .fvm/ directories are skipped.
+  - A file containing `// fix_flutter_deprecations: ignore_file` near
+    the top is left untouched.
+  - No backup files are created by default; use -b if you want them.
 
-Use --list-rules for the full set of available rules.
+Use --list-rules to see the full set of rules with descriptions.
 ''');
   }
 
