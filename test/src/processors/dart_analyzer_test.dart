@@ -37,6 +37,8 @@ void main() {
       test('returns true for valid Dart code', () async {
         const validCode = '''
 void main() {
+  // Silenced by fix_deprecations; replace with a logger if needed.
+  // ignore: avoid_print
   print('Hello, World!');
 }
 ''';
@@ -63,6 +65,8 @@ void main() {
       test('handles ProcessException gracefully', () async {
         const validCode = '''
 void main() {
+  // Silenced by fix_deprecations; replace with a logger if needed.
+  // ignore: avoid_print
   print('Hello, World!');
 }
 ''';
@@ -86,6 +90,8 @@ void main() {
 
         await file1.writeAsString('''
 void main() {
+  // Silenced by fix_deprecations; replace with a logger if needed.
+  // ignore: avoid_print
   print('File 1');
 }
 ''');
@@ -142,6 +148,8 @@ void main() {
       test('returns false for syntactically correct code', () async {
         const validCode = '''
 void main() {
+  // Silenced by fix_deprecations; replace with a logger if needed.
+  // ignore: avoid_print
   print('Hello, World!');
 }
 ''';
@@ -167,6 +175,8 @@ void main() {
       test('handles ProcessException gracefully', () async {
         const validCode = '''
 void main() {
+  // Silenced by fix_deprecations; replace with a logger if needed.
+  // ignore: avoid_print
   print('Hello, World!');
 }
 ''';
@@ -183,6 +193,8 @@ void main() {
       test('returns empty list for valid code', () async {
         const validCode = '''
 void main() {
+  // Silenced by fix_deprecations; replace with a logger if needed.
+  // ignore: avoid_print
   print('Hello, World!');
 }
 ''';
@@ -208,6 +220,8 @@ void main() {
       test('handles ProcessException gracefully', () async {
         const validCode = '''
 void main() {
+  // Silenced by fix_deprecations; replace with a logger if needed.
+  // ignore: avoid_print
   print('Hello, World!');
 }
 ''';
@@ -222,6 +236,8 @@ void main() {
         const codeWithWarning = '''
 void main() {
   var unusedVariable = 'this will cause a warning';
+  // Silenced by fix_deprecations; replace with a logger if needed.
+  // ignore: avoid_print
   print('Hello, World!');
 }
 ''';

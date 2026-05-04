@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-05-04
+
+### Added
+- **9 new lint-fix rules** that complement `dart fix` for `very_good_analysis`-style projects:
+  - `cascadeInvocations`: collapse runs of `obj.a(); obj.b(); obj.c();` into a cascade chain. Skips capitalized receivers (static calls on classes) and any run that contains an assignment.
+  - `controlBodyNewLine`: rewrite inline `if (x) y;` / `for (...)` / `while (...)` to a braced 3-line form, satisfying both `always_put_control_body_on_new_line` and `curly_braces_in_flow_control_structures`.
+  - `avoidPrint`: insert a documented `// ignore: avoid_print` above any unguarded `print(...)` call. Skips files with a file-level `// ignore_for_file: avoid_print` directive and ignores `print` mentions inside string literals or comments.
+  - `flutterStyleTodos`: rewrite unnamed `// TODO:` (and `/// TODO:`) comments to the Flutter `// TODO(unassigned):` style.
+  - `unintendedHtmlDocComment`: wrap `<Type>` style fragments inside `///` doc comments in backticks. Allowed HTML tags (`<br>`, `<p>`, `<a>`, `<code>`, ...) are left alone.
+  - `unreachableFromMain`: heuristically tag top-level test helpers (functions whose names contain `mock`, `setup`, `helper`, `seed`, `fixture`, `stub`, or `fake`) with `// ignore: unreachable_from_main`.
+  - `strictRawType`: replace `Map<dynamic, dynamic>` with `Map<String, dynamic>`.
+  - `removedLint`: remove retired lint names (e.g. `package_api_docs`, `iterable_contains_unrelated_type`, ...) from `analysis_options.yaml`.
+  - `sortPubDependencies`: alphabetically sort `dependencies:`, `dev_dependencies:` and `dependency_overrides:` blocks in `pubspec.yaml` while preserving comments and multi-line entries.
+- **YAML support**: rules can now declare `appliesToExtensions` to target project-config files (`pubspec.yaml`, `analysis_options.yaml`) in addition to `.dart` source files. The CLI scans config files at the project root automatically.
+- **Generated-area exclusion**: `.dart_tool/`, `build/`, `.fvm/` directories are skipped during traversal.
+
+### Fixed
+- `--help` / `-h` now prints usage instead of starting to process files.
+
+### Changed
+- `FileUtils.findDartFiles` now delegates to `FileUtils.findProjectFiles`, which accepts an extension set and a `includeProjectConfigs` flag.
+- `FileProcessor` filters rules per-file based on `appliesToExtensions`, so yaml-only rules never run on Dart files and vice versa.
+
 ## [0.1.2] - 2025-08-03
 
 ### Added

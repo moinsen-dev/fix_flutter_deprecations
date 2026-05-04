@@ -11,10 +11,19 @@ class OnSurfaceVariantRule extends DeprecationRule {
   String get name => 'onSurface';
 
   @override
-  String get description => 'Replace deprecated onSurface with onSurface';
+  // Strings assembled at runtime so this rule cannot rewrite its own source.
+  String get description {
+    const a = 'onSurface';
+    const b = 'Variant';
+    return 'Replace deprecated $a$b with onSurface';
+  }
 
   @override
-  String get deprecatedPattern => 'onSurface';
+  String get deprecatedPattern {
+    const a = 'onSurface';
+    const b = 'Variant';
+    return '$a$b';
+  }
 
   @override
   String get replacementExample => 'onSurface';

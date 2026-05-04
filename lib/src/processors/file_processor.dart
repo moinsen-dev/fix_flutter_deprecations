@@ -4,6 +4,7 @@ import 'package:fix_flutter_deprecations/src/models/models.dart';
 import 'package:fix_flutter_deprecations/src/rules/rules.dart';
 import 'package:fix_flutter_deprecations/src/utils/utils.dart';
 import 'package:mason_logger/mason_logger.dart';
+import 'package:path/path.dart' as path;
 
 /// Processes Dart files to apply Flutter deprecation fixes.
 ///
@@ -73,10 +74,27 @@ class FileProcessor {
     try {
       // Read file content
       final content = await FileUtils.readFile(file);
+
+      // Honour an opt-out marker at the top of the file. The marker is
+      // intended for files that contain test fixtures or example snippets
+      // which would otherwise trip the rules' regexes.
+      if (_hasFileIgnoreMarker(content)) {
+        return FixResult.success(
+          filePath: filePath,
+          appliedRules: const [],
+          changes: const [],
+        );
+      }
+
       var modifiedContent = content;
 
-      // Get rules to apply
-      final rules = RuleRegistry.getRules(options.rules);
+      // Get rules to apply, filtered by file extension / basename.
+      final fileExt = path.extension(file.path);
+      final fileBasename = path.basename(file.path);
+      final rules = RuleRegistry.getRules(options.rules).where((rule) {
+        return rule.appliesToExtensions.contains(fileExt) ||
+            rule.appliesToExtensions.contains(fileBasename);
+      }).toList();
       final appliedRules = <String>[];
       final changes = <String>[];
 
@@ -141,6 +159,30 @@ class FileProcessor {
         error: e.toString(),
       );
     }
+  }
+
+  /// File-level opt-out marker. A file whose first 10 non-blank lines
+  /// contain the string `fix_flutter_deprecations: ignore_file` is left
+  /// completely untouched. Useful for test fixtures or examples that
+  /// would otherwise trip the rules' regexes.
+  static const ignoreFileMarker = 'fix_flutter_deprecations: ignore_file';
+
+  bool _hasFileIgnoreMarker(String content) {
+    var nonBlank = 0;
+    for (final raw in content.split('\n')) {
+      final line = raw.trim();
+      if (line.isEmpty) {
+        continue;
+      }
+      if (line.contains(ignoreFileMarker)) {
+        return true;
+      }
+      nonBlank++;
+      if (nonBlank >= 10) {
+        return false;
+      }
+    }
+    return false;
   }
 
   /// Processes multiple files with the given options.

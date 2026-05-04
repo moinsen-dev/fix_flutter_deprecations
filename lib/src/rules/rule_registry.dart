@@ -1,8 +1,17 @@
+import 'package:fix_flutter_deprecations/src/rules/avoid_print_rule.dart';
 import 'package:fix_flutter_deprecations/src/rules/build_context_async_rule.dart';
+import 'package:fix_flutter_deprecations/src/rules/cascade_invocations_rule.dart';
+import 'package:fix_flutter_deprecations/src/rules/control_body_new_line_rule.dart';
 import 'package:fix_flutter_deprecations/src/rules/deprecation_rule.dart';
+import 'package:fix_flutter_deprecations/src/rules/flutter_style_todos_rule.dart';
 import 'package:fix_flutter_deprecations/src/rules/multiple_underscores_rule.dart';
 import 'package:fix_flutter_deprecations/src/rules/on_surface_variant_rule.dart';
+import 'package:fix_flutter_deprecations/src/rules/removed_lint_rule.dart';
+import 'package:fix_flutter_deprecations/src/rules/sort_pub_dependencies_rule.dart';
+import 'package:fix_flutter_deprecations/src/rules/strict_raw_type_rule.dart';
 import 'package:fix_flutter_deprecations/src/rules/surface_variant_rule.dart';
+import 'package:fix_flutter_deprecations/src/rules/unintended_html_doc_comment_rule.dart';
+import 'package:fix_flutter_deprecations/src/rules/unreachable_from_main_rule.dart';
 import 'package:fix_flutter_deprecations/src/rules/will_pop_scope_rule.dart';
 import 'package:fix_flutter_deprecations/src/rules/with_opacity_rule.dart';
 
@@ -13,12 +22,24 @@ class RuleRegistry {
 
   /// All available deprecation rules.
   static const List<DeprecationRule> allRules = [
+    // Flutter / Material deprecations.
     WithOpacityRule(),
     SurfaceVariantRule(),
     OnSurfaceVariantRule(),
     WillPopScopeRule(),
+    // Lint rule fixes (Dart source files).
     MultipleUnderscoresRule(),
     BuildContextAsyncRule(),
+    CascadeInvocationsRule(),
+    ControlBodyNewLineRule(),
+    AvoidPrintRule(),
+    FlutterStyleTodosRule(),
+    UnintendedHtmlDocCommentRule(),
+    UnreachableFromMainRule(),
+    StrictRawTypeRule(),
+    // Project-config rules (yaml files).
+    RemovedLintRule(),
+    SortPubDependenciesRule(),
   ];
 
   /// Gets all available rule names.

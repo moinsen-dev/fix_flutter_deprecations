@@ -99,12 +99,7 @@ Examples:
 By default, NO backup files are created (assuming you use version control).
 Use -b flag if you want backup files.
 
-Supported deprecations:
-  - withOpacity → withValues(alpha: ...)
-  - surfaceContainerHighest → surfaceContainerHighest
-  - onSurface → onSurface
-  - WillPopScope → PopScope
-  - Multiple underscores → Single underscore
+Use --list-rules for the full set of available rules.
 ''');
   }
 
@@ -154,8 +149,8 @@ Supported deprecations:
       return ExitCode.success.code;
     }
 
-    // Handle help flag or no arguments
-    if (topLevelResults.arguments.isEmpty) {
+    // Handle --help / -h flag or no arguments
+    if (topLevelResults.arguments.isEmpty || topLevelResults['help'] == true) {
       printUsage();
       return ExitCode.success.code;
     }
@@ -260,14 +255,14 @@ Supported deprecations:
     // Find Dart files
     List<File> files;
     try {
-      files = await FileUtils.findDartFiles(options.targetPath);
+      files = await FileUtils.findProjectFiles(options.targetPath);
 
       if (files.isEmpty) {
-        _logger.warn('No Dart files found in ${options.targetPath}');
+        _logger.warn('No Dart or config files found in ${options.targetPath}');
         return ExitCode.success.code;
       }
 
-      _logger.info('Found ${files.length} Dart file(s) to process');
+      _logger.info('Found ${files.length} file(s) to process');
 
       // Create file processor
       final processor = FileProcessor(logger: _logger);

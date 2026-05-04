@@ -11,11 +11,19 @@ class SurfaceVariantRule extends DeprecationRule {
   String get name => 'surfaceContainerHighest';
 
   @override
-  String get description =>
-      'Replace deprecated surfaceContainerHighest with surfaceContainerHighest';
+  // Strings assembled at runtime so this rule cannot rewrite its own source.
+  String get description {
+    const a = 'surface';
+    const b = 'Variant';
+    return 'Replace deprecated $a$b with surfaceContainerHighest';
+  }
 
   @override
-  String get deprecatedPattern => 'surfaceContainerHighest';
+  String get deprecatedPattern {
+    const a = 'surface';
+    const b = 'Variant';
+    return '$a$b';
+  }
 
   @override
   String get replacementExample => 'surfaceContainerHighest';

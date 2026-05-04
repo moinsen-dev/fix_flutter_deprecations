@@ -1,3 +1,5 @@
+// fix_flutter_deprecations: ignore_file
+
 import 'package:fix_flutter_deprecations/src/rules/rules.dart';
 import 'package:test/test.dart';
 
@@ -11,37 +13,28 @@ void main() {
 
     test('has correct properties', () {
       expect(rule.name, equals('surfaceContainerHighest'));
-      expect(
-        rule.description,
-        equals(
-          'Replace deprecated surfaceContainerHighest with '
-          'surfaceContainerHighest',
-        ),
-      );
-      expect(rule.deprecatedPattern, equals('surfaceContainerHighest'));
+      expect(rule.description, contains('surfaceVariant'));
+      expect(rule.deprecatedPattern, contains('surfaceVariant'));
       expect(rule.replacementExample, equals('surfaceContainerHighest'));
     });
 
     group('matches', () {
-      test('matches surfaceContainerHighest usage', () {
-        expect(rule.matches('colorScheme.surfaceContainerHighest'), isTrue);
+      test('matches surfaceVariant usage', () {
+        expect(rule.matches('colorScheme.surfaceVariant'), isTrue);
+        expect(rule.matches('theme.colorScheme.surfaceVariant'), isTrue);
         expect(
-          rule.matches('theme.colorScheme.surfaceContainerHighest'),
-          isTrue,
-        );
-        expect(
-          rule.matches('Theme.of(context).colorScheme.surfaceContainerHighest'),
+          rule.matches('Theme.of(context).colorScheme.surfaceVariant'),
           isTrue,
         );
       });
 
-      test('matches surfaceContainerHighest in different contexts', () {
-        expect(rule.matches('color: surfaceContainerHighest'), isTrue);
+      test('matches surfaceVariant in different contexts', () {
+        expect(rule.matches('color: surfaceVariant'), isTrue);
         expect(
-          rule.matches('backgroundColor: colorScheme.surfaceContainerHighest,'),
+          rule.matches('backgroundColor: colorScheme.surfaceVariant,'),
           isTrue,
         );
-        expect(rule.matches('final bg = surfaceContainerHighest;'), isTrue);
+        expect(rule.matches('final bg = surfaceVariant;'), isTrue);
       });
 
       test('does not match partial words', () {
@@ -53,22 +46,22 @@ void main() {
       test('does not match in strings or comments', () {
         // Note: Our simple regex doesn't distinguish strings/comments
         // This is a limitation but acceptable for our use case
-        expect(rule.matches('"surfaceContainerHighest"'), isTrue);
-        expect(rule.matches('// surfaceContainerHighest'), isTrue);
+        expect(rule.matches('"surfaceVariant"'), isTrue);
+        expect(rule.matches('// surfaceVariant'), isTrue);
       });
     });
 
     group('apply', () {
-      test('replaces simple surfaceContainerHighest usage', () {
-        const input = 'colorScheme.surfaceContainerHighest';
+      test('replaces simple surfaceVariant usage', () {
+        const input = 'colorScheme.surfaceVariant';
         const expected = 'colorScheme.surfaceContainerHighest';
         expect(rule.apply(input), equals(expected));
       });
 
       test('replaces multiple occurrences', () {
         const input = '''
-final color1 = colorScheme.surfaceContainerHighest;
-final color2 = theme.colorScheme.surfaceContainerHighest;
+final color1 = colorScheme.surfaceVariant;
+final color2 = theme.colorScheme.surfaceVariant;
 ''';
         const expected = '''
 final color1 = colorScheme.surfaceContainerHighest;
@@ -78,7 +71,7 @@ final color2 = theme.colorScheme.surfaceContainerHighest;
       });
 
       test('preserves surrounding code', () {
-        const input = 'Container(color: colorScheme.surfaceContainerHighest)';
+        const input = 'Container(color: colorScheme.surfaceVariant)';
         const expected =
             'Container(color: colorScheme.surfaceContainerHighest)';
         expect(rule.apply(input), equals(expected));
@@ -88,7 +81,7 @@ final color2 = theme.colorScheme.surfaceContainerHighest;
         const input = '''
 Theme.of(context)
     .colorScheme
-    .surfaceContainerHighest
+    .surfaceVariant
 ''';
         const expected = '''
 Theme.of(context)
@@ -106,7 +99,7 @@ Theme.of(context)
 
     group('validate', () {
       test('validates successful transformation', () {
-        const original = 'colorScheme.surfaceContainerHighest';
+        const original = 'colorScheme.surfaceVariant';
         const modified = 'colorScheme.surfaceContainerHighest';
         expect(rule.validate(original, modified), isTrue);
       });
@@ -118,21 +111,21 @@ Theme.of(context)
       });
 
       test('fails validation if content deleted', () {
-        const original = 'colorScheme.surfaceContainerHighest';
+        const original = 'colorScheme.surfaceVariant';
         const modified = '';
         expect(rule.validate(original, modified), isFalse);
       });
 
-      test('fails validation if surfaceContainerHighest remains', () {
-        const original = 'colorScheme.surfaceContainerHighest';
-        const modified = 'colorScheme.surfaceContainerHighest';
+      test('fails validation if surfaceVariant remains', () {
+        const original = 'colorScheme.surfaceVariant';
+        const modified = 'colorScheme.surfaceVariant';
         expect(rule.validate(original, modified), isFalse);
       });
 
       test('validates correct replacement count', () {
         const original = '''
-color1: colorScheme.surfaceContainerHighest,
-color2: colorScheme.surfaceContainerHighest,
+color1: colorScheme.surfaceVariant,
+color2: colorScheme.surfaceVariant,
 color3: colorScheme.surfaceContainerHighest,
 ''';
         const modified = '''

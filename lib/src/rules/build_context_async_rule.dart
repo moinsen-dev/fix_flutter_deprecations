@@ -242,5 +242,4 @@ class BuildContextAsyncRule extends DeprecationRule {
 
     return true;
   }
-
 }

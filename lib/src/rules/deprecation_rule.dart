@@ -57,6 +57,13 @@ abstract class DeprecationRule {
   /// An example of the replacement pattern.
   String get replacementExample;
 
+  /// File extensions this rule applies to.
+  ///
+  /// Most rules apply to Dart source files (`.dart`). Rules targeting
+  /// project configuration (e.g. `pubspec.yaml`, `analysis_options.yaml`)
+  /// override this to declare their target extensions.
+  Set<String> get appliesToExtensions => const {'.dart'};
+
   /// Checks if this rule applies to the given content.
   ///
   /// This method scans the provided [content] for patterns that match
